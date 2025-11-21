@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +51,7 @@ public class CredentialResource {
 			@NotNull(message = "Input must not NULL") 
 			@Valid final CredentialDto credentialDto) {
 		log.info("*** CredentialDto, resource; save credential *");
-		return ResponseEntity.ok(this.credentialService.save(credentialDto));
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.credentialService.save(credentialDto));
 	}
 	
 	@PutMapping

@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +51,7 @@ public class AddressResource {
 			@NotNull(message = "Input must not NULL") 
 			@Valid final AddressDto addressDto) {
 		log.info("*** AddressDto, resource; save address *");
-		return ResponseEntity.ok(this.addressService.save(addressDto));
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.addressService.save(addressDto));
 	}
 	
 	@PutMapping

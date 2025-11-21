@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,7 +66,7 @@ public class FavouriteResource {
 			@NotNull(message = "Input must not be NULL") 
 			@Valid final FavouriteDto favouriteDto) {
 		log.info("*** FavouriteDto, resource; save favourite *");
-		return ResponseEntity.ok(this.favouriteService.save(favouriteDto));
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.favouriteService.save(favouriteDto));
 	}
 	
 	@PutMapping

@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +51,7 @@ public class OrderResource {
 			@NotNull(message = "Input must not be NULL") 
 			@Valid final OrderDto orderDto) {
 		log.info("*** OrderDto, resource; save order *");
-		return ResponseEntity.ok(this.orderService.save(orderDto));
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.orderService.save(orderDto));
 	}
 	
 	@PutMapping
@@ -75,7 +76,10 @@ public class OrderResource {
 	}
 	
 	@DeleteMapping("/{orderId}")
-	public ResponseEntity<Boolean> deleteById(@PathVariable("orderId") final String orderId) {
+	public ResponseEntity<Boolean> deleteById(
+			@PathVariable("orderId") 
+			@NotBlank(message = "Input must not be blank") 
+			@Valid final String orderId) {
 		log.info("*** Boolean, resource; delete order by id *");
 		this.orderService.deleteById(Integer.parseInt(orderId));
 		return ResponseEntity.ok(true);

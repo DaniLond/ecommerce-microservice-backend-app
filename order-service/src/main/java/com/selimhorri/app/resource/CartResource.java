@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,10 +48,10 @@ public class CartResource {
 	@PostMapping
 	public ResponseEntity<CartDto> save(
 			@RequestBody 
-			@NotNull(message = "Input must not be NULL!") 
+			@NotNull(message = "Input must not be NULL") 
 			@Valid final CartDto cartDto) {
 		log.info("*** CartDto, resource; save cart *");
-		return ResponseEntity.ok(this.cartService.save(cartDto));
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.cartService.save(cartDto));
 	}
 	
 	@PutMapping
