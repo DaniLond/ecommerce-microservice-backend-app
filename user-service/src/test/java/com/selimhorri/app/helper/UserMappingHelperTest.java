@@ -33,7 +33,6 @@ class UserMappingHelperTest {
 		credential.setIsAccountNonLocked(true);
 		credential.setIsCredentialsNonExpired(true);
 		
-		// Create User
 		user = new User();
 		user.setUserId(1);
 		user.setFirstName("John");
