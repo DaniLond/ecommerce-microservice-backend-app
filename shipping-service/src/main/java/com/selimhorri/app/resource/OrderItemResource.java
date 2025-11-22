@@ -2,8 +2,8 @@ package com.selimhorri.app.resource;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.selimhorri.app.domain.id.OrderItemId;
+import com.selimhorri.app.util.ParserUtil;
 import com.selimhorri.app.dto.OrderItemDto;
 import com.selimhorri.app.dto.response.collection.DtoCollectionResponse;
 import com.selimhorri.app.service.OrderItemService;
@@ -37,12 +38,18 @@ public class OrderItemResource {
 	}
 	
 	@GetMapping("/{orderId}/{productId}")
-	public ResponseEntity<OrderItemDto> findById(
-			@PathVariable("orderId") final String orderId, 
-			@PathVariable("productId") final String productId) {
+    public ResponseEntity<OrderItemDto> findById(
+	    @PathVariable("orderId") 
+	    @NotBlank(message = "Input must not blank") 
+	    @Valid final String orderId, 
+	    @PathVariable("productId") 
+	    @NotBlank(message = "Input must not blank") 
+	    @Valid final String productId) {
 		log.info("*** OrderItemDto, resource; fetch orderItem by id *");
+		final Integer parsedOrderId = ParserUtil.parseId(orderId, "orderId");
+		final Integer parsedProductId = ParserUtil.parseId(productId, "productId");
 		return ResponseEntity.ok(this.orderItemService.findById(
-				new OrderItemId(Integer.parseInt(orderId), Integer.parseInt(productId))));
+			new OrderItemId(parsedProductId, parsedOrderId)));
 	}
 	
 	@GetMapping("/find")
@@ -60,7 +67,7 @@ public class OrderItemResource {
 			@NotNull(message = "Input must not be NULL") 
 			@Valid final OrderItemDto orderItemDto) {
 		log.info("*** OrderItemDto, resource; save orderItem *");
-		return ResponseEntity.status(HttpStatus.CREATED).body(this.orderItemService.save(orderItemDto));
+		return ResponseEntity.ok(this.orderItemService.save(orderItemDto));
 	}
 	
 	@PutMapping
@@ -73,11 +80,17 @@ public class OrderItemResource {
 	}
 	
 	@DeleteMapping("/{orderId}/{productId}")
-	public ResponseEntity<Boolean> deleteById(
-			@PathVariable("orderId") final String orderId, 
-			@PathVariable("productId") final String productId) {
+    public ResponseEntity<Boolean> deleteById(
+	    @PathVariable("orderId") 
+	    @NotBlank(message = "Input must not blank") 
+	    @Valid final String orderId, 
+	    @PathVariable("productId") 
+	    @NotBlank(message = "Input must not blank") 
+	    @Valid final String productId) {
 		log.info("*** Boolean, resource; delete orderItem by id *");
-		this.orderItemService.deleteById(new OrderItemId(Integer.parseInt(orderId), Integer.parseInt(productId)));
+		final Integer parsedOrderId = ParserUtil.parseId(orderId, "orderId");
+		final Integer parsedProductId = ParserUtil.parseId(productId, "productId");
+		this.orderItemService.deleteById(new OrderItemId(parsedProductId, parsedOrderId));
 		return ResponseEntity.ok(true);
 	}
 	
