@@ -5,19 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("UserObjectNotFoundException Tests")
+import com.selimhorri.app.exception.ErrorCode;
+import com.selimhorri.app.exception.custom.ResourceNotFoundException;
+
+@DisplayName("ResourceNotFoundException Tests")
 class UserObjectNotFoundExceptionTest {
-	
-	@Test
-	@DisplayName("Should create exception with default constructor")
-	void testDefaultConstructor() {
-		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException();
-		
-		// Then
-		assertNotNull(exception);
-		assertNull(exception.getMessage());
-	}
 	
 	@Test
 	@DisplayName("Should create exception with message")
@@ -26,41 +18,55 @@ class UserObjectNotFoundExceptionTest {
 		String message = "User not found";
 		
 		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException(message);
+		ResourceNotFoundException exception = new ResourceNotFoundException(message);
 		
 		// Then
 		assertNotNull(exception);
 		assertEquals(message, exception.getMessage());
+		assertNotNull(exception.getErrorCode());
 	}
 	
 	@Test
-	@DisplayName("Should create exception with message and cause")
-	void testConstructorWithMessageAndCause() {
-		// Given
-		String message = "User not found";
-		Throwable cause = new RuntimeException("Database error");
-		
+	@DisplayName("Should create exception with error code")
+	void testConstructorWithErrorCode() {
 		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException(message, cause);
+		ResourceNotFoundException exception = new ResourceNotFoundException(ErrorCode.USER_NOT_FOUND);
 		
 		// Then
 		assertNotNull(exception);
-		assertEquals(message, exception.getMessage());
-		assertEquals(cause, exception.getCause());
+		assertNotNull(exception.getMessage());
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
 	}
 	
 	@Test
-	@DisplayName("Should create exception with cause")
-	void testConstructorWithCause() {
+	@DisplayName("Should create exception with error code and formatted message")
+	void testConstructorWithErrorCodeAndArgs() {
 		// Given
-		Throwable cause = new RuntimeException("Database error");
+		Integer userId = 999;
 		
 		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException(cause);
+		ResourceNotFoundException exception = new ResourceNotFoundException(
+			ErrorCode.USER_NOT_FOUND, userId
+		);
 		
 		// Then
 		assertNotNull(exception);
-		assertEquals(cause, exception.getCause());
+		assertNotNull(exception.getMessage());
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+	}
+	
+	@Test
+	@DisplayName("Should have error code when created with message")
+	void testErrorCodeWithMessage() {
+		// Given
+		String message = "User with id: 123 not found";
+		
+		// When
+		ResourceNotFoundException exception = new ResourceNotFoundException(message);
+		
+		// Then
+		assertNotNull(exception.getErrorCode());
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
 	}
 	
 	@Test
@@ -70,8 +76,8 @@ class UserObjectNotFoundExceptionTest {
 		String message = "User with id: 999 not found";
 		
 		// When & Then
-		assertThrows(UserObjectNotFoundException.class, () -> {
-			throw new UserObjectNotFoundException(message);
+		assertThrows(ResourceNotFoundException.class, () -> {
+			throw new ResourceNotFoundException(message);
 		});
 	}
 	
@@ -79,7 +85,7 @@ class UserObjectNotFoundExceptionTest {
 	@DisplayName("Should preserve stack trace")
 	void testStackTrace() {
 		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException("Test exception");
+		ResourceNotFoundException exception = new ResourceNotFoundException("Test exception");
 		
 		// Then
 		assertNotNull(exception.getStackTrace());

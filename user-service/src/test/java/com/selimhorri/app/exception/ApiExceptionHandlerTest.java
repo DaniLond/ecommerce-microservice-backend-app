@@ -1,17 +1,20 @@
 package com.selimhorri.app.exception;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.selimhorri.app.exception.payload.ExceptionMsg;
-import com.selimhorri.app.exception.wrapper.UserObjectNotFoundException;
+import com.selimhorri.app.exception.custom.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ApiExceptionHandler Tests")
@@ -20,24 +23,29 @@ class ApiExceptionHandlerTest {
 	@InjectMocks
 	private ApiExceptionHandler apiExceptionHandler;
 	
+	@Mock
+	private HttpServletRequest request;
+	
 	// Removidos tests de validación problemáticos - estos requieren constructor real de MethodArgumentNotValidException
 	
 	@Test
 	@DisplayName("Should handle not found exception")
 	void testHandleNotFoundException() {
 		// Given
-		UserObjectNotFoundException exception = new UserObjectNotFoundException("User not found");
+		ResourceNotFoundException exception = new ResourceNotFoundException("User not found");
+		when(request.getRequestURI()).thenReturn("/api/users/999");
 		
 		// When
-		ResponseEntity<ExceptionMsg> response = apiExceptionHandler.handleNotFoundException(exception);
+		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleResourceNotFoundException(exception, request);
 		
 		// Then
 		assertNotNull(response);
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getMsg().contains("User not found"));
-		assertEquals(HttpStatus.NOT_FOUND, response.getBody().getHttpStatus());
+		assertTrue(response.getBody().getMessage().contains("User not found"));
+		assertEquals(HttpStatus.NOT_FOUND.value(), response.getBody().getStatus());
 		assertNotNull(response.getBody().getTimestamp());
+		assertNotNull(response.getBody().getErrorCode());
 	}
 	
 	@Test
@@ -45,15 +53,16 @@ class ApiExceptionHandlerTest {
 	void testHandleBadRequestException() {
 		// Given
 		IllegalArgumentException exception = new IllegalArgumentException("Invalid argument");
+		when(request.getRequestURI()).thenReturn("/api/users");
 		
 		// When
-		ResponseEntity<ExceptionMsg> response = apiExceptionHandler.handleBadRequestException(exception);
+		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleBadRequestException(exception, request);
 		
 		// Then
 		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getMsg().contains("Invalid argument"));
+		assertTrue(response.getBody().getMessage().contains("Invalid argument"));
 	}
 	
 	@Test
@@ -61,15 +70,16 @@ class ApiExceptionHandlerTest {
 	void testHandleNumberFormatException() {
 		// Given
 		NumberFormatException exception = new NumberFormatException("For input string: \"abc\"");
+		when(request.getRequestURI()).thenReturn("/api/users/abc");
 		
 		// When
-		ResponseEntity<ExceptionMsg> response = apiExceptionHandler.handleBadRequestException(exception);
+		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleBadRequestException(exception, request);
 		
 		// Then
 		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getMsg().contains("Invalid number format for ID parameter"));
+		assertTrue(response.getBody().getMessage().contains("Invalid ID format"));
 	}
 	
 	@Test
@@ -77,14 +87,15 @@ class ApiExceptionHandlerTest {
 	void testHandleIllegalStateException() {
 		// Given
 		IllegalStateException exception = new IllegalStateException("Invalid state");
+		when(request.getRequestURI()).thenReturn("/api/users");
 		
 		// When
-		ResponseEntity<ExceptionMsg> response = apiExceptionHandler.handleBadRequestException(exception);
+		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleBadRequestException(exception, request);
 		
 		// Then
 		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getMsg().contains("Invalid state"));
+		assertTrue(response.getBody().getMessage().contains("Invalid state"));
 	}
 }

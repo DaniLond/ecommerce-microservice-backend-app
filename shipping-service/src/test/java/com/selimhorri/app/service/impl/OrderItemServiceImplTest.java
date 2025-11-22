@@ -21,7 +21,7 @@ import com.selimhorri.app.domain.id.OrderItemId;
 import com.selimhorri.app.dto.OrderDto;
 import com.selimhorri.app.dto.OrderItemDto;
 import com.selimhorri.app.dto.ProductDto;
-import com.selimhorri.app.exception.wrapper.OrderItemNotFoundException;
+import com.selimhorri.app.exception.custom.ResourceNotFoundException;
 import com.selimhorri.app.repository.OrderItemRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,7 +85,7 @@ class OrderItemServiceImplTest {
 	void testFindByIdNotFound() {
 		when(orderItemRepository.findById(any())).thenReturn(Optional.empty());
 		
-		assertThrows(OrderItemNotFoundException.class, () -> orderItemService.findById(orderItemId));
+		assertThrows(ResourceNotFoundException.class, () -> orderItemService.findById(orderItemId));
 	}
 	
 	@Test
@@ -102,21 +102,25 @@ class OrderItemServiceImplTest {
 	@Test
 	@DisplayName("Should update order item")
 	void testUpdate() {
+		when(orderItemRepository.existsById(any(OrderItemId.class))).thenReturn(true);
 		when(orderItemRepository.save(any(OrderItem.class))).thenReturn(orderItem);
 		
 		OrderItemDto result = orderItemService.update(orderItemDto);
 		
 		assertNotNull(result);
+		verify(orderItemRepository, times(1)).existsById(any(OrderItemId.class));
 		verify(orderItemRepository, times(1)).save(any(OrderItem.class));
 	}
 	
 	@Test
 	@DisplayName("Should delete order item")
 	void testDeleteById() {
+		when(orderItemRepository.existsById(orderItemId)).thenReturn(true);
 		doNothing().when(orderItemRepository).deleteById(orderItemId);
 		
 		orderItemService.deleteById(orderItemId);
 		
+		verify(orderItemRepository, times(1)).existsById(orderItemId);
 		verify(orderItemRepository, times(1)).deleteById(orderItemId);
 	}
 }

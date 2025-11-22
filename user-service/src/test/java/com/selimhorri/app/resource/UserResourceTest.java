@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.selimhorri.app.dto.UserDto;
-import com.selimhorri.app.exception.wrapper.UserObjectNotFoundException;
+import com.selimhorri.app.exception.custom.ResourceNotFoundException;
 import com.selimhorri.app.service.UserService;
 
 @WebMvcTest(UserResource.class)
@@ -92,7 +92,7 @@ class UserResourceTest {
 	void testFindByIdNotFound() throws Exception {
 		// Given
 		when(userService.findById(999)).thenThrow(
-			new UserObjectNotFoundException("User with id: 999 not found")
+			new ResourceNotFoundException("User with id: 999 not found")
 		);
 		
 		// When & Then
@@ -183,7 +183,7 @@ class UserResourceTest {
 	void testFindByUsernameNotFound() throws Exception {
 		// Given
 		when(userService.findByUsername("unknown_user")).thenThrow(
-			new UserObjectNotFoundException("User with username: unknown_user not found")
+			new ResourceNotFoundException("User with username: unknown_user not found")
 		);
 		
 		// When & Then

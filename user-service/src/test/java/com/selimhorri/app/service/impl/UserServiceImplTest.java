@@ -21,7 +21,7 @@ import com.selimhorri.app.domain.RoleBasedAuthority;
 import com.selimhorri.app.domain.User;
 import com.selimhorri.app.dto.CredentialDto;
 import com.selimhorri.app.dto.UserDto;
-import com.selimhorri.app.exception.wrapper.UserObjectNotFoundException;
+import com.selimhorri.app.exception.custom.ResourceNotFoundException;
 import com.selimhorri.app.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -134,8 +134,8 @@ class UserServiceImplTest {
 		when(userRepository.findById(999)).thenReturn(Optional.empty());
 		
 		// When & Then
-		UserObjectNotFoundException exception = assertThrows(
-			UserObjectNotFoundException.class,
+		ResourceNotFoundException exception = assertThrows(
+			ResourceNotFoundException.class,
 			() -> userService.findById(999)
 		);
 		
@@ -224,8 +224,8 @@ class UserServiceImplTest {
 		when(userRepository.findByCredentialUsername("unknown")).thenReturn(Optional.empty());
 		
 		// When & Then
-		UserObjectNotFoundException exception = assertThrows(
-			UserObjectNotFoundException.class,
+		ResourceNotFoundException exception = assertThrows(
+			ResourceNotFoundException.class,
 			() -> userService.findByUsername("unknown")
 		);
 		
