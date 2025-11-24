@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.selimhorri.app.exception.ErrorCode;
+import com.selimhorri.app.exception.custom.ResourceNotFoundException;
 
 @DisplayName("UserObjectNotFoundException Tests")
 class UserObjectNotFoundExceptionTest {
@@ -30,7 +31,7 @@ class UserObjectNotFoundExceptionTest {
 		String message = "User not found";
 		
 		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException(message);
+		ResourceNotFoundException exception = new ResourceNotFoundException(message);
 		
 		// Then
 		assertNotNull(exception);
@@ -76,8 +77,8 @@ class UserObjectNotFoundExceptionTest {
 		String message = "User with id: 999 not found";
 		
 		// When & Then
-		assertThrows(UserObjectNotFoundException.class, () -> {
-			throw new UserObjectNotFoundException(message);
+		assertThrows(ResourceNotFoundException.class, () -> {
+			throw new ResourceNotFoundException(message);
 		});
 	}
 	
@@ -85,7 +86,7 @@ class UserObjectNotFoundExceptionTest {
 	@DisplayName("Should preserve stack trace")
 	void testStackTrace() {
 		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException("Test exception");
+		ResourceNotFoundException exception = new ResourceNotFoundException("Test exception");
 		
 		// Then
 		assertNotNull(exception.getStackTrace());

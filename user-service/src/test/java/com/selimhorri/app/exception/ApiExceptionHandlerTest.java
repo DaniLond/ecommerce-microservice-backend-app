@@ -54,6 +54,7 @@ class ApiExceptionHandlerTest {
 	void testHandleIllegalArgumentException() {
 		// Given
 		IllegalArgumentException exception = new IllegalArgumentException("Invalid argument");
+		when(request.getRequestURI()).thenReturn("/api/users");
 		
 		// When
 		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleBadRequestException(exception, request);
@@ -70,6 +71,7 @@ class ApiExceptionHandlerTest {
 	void testHandleNumberFormatException() {
 		// Given
 		NumberFormatException exception = new NumberFormatException("For input string: \"abc\"");
+		when(request.getRequestURI()).thenReturn("/api/users/abc");
 		
 		// When
 		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleBadRequestException(exception, request);
@@ -86,6 +88,7 @@ class ApiExceptionHandlerTest {
 	void testHandleIllegalStateException() {
 		// Given
 		IllegalStateException exception = new IllegalStateException("Invalid state");
+		when(request.getRequestURI()).thenReturn("/api/users");
 		
 		// When
 		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleBadRequestException(exception, request);
