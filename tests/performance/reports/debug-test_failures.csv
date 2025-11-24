@@ -1,0 +1,7 @@
+Method,Name,Error,Occurrences
+GET,Get All Orders,"ConnectionRefusedError(10061, '[WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.')",4
+GET,Get All Carts,"ConnectionRefusedError(10061, '[WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.')",4
+GET,Get Category Details,"ConnectionRefusedError(10061, '[WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.')",3
+GET,Get Product Details,"ConnectionRefusedError(10061, '[WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.')",1
+GET,Get All Products,"ConnectionRefusedError(10061, '[WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.')",1
+GET,Get All Categories,"ConnectionRefusedError(10061, '[WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.')",3
