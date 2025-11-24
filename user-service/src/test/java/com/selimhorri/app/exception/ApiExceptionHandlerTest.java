@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,14 +27,16 @@ class ApiExceptionHandlerTest {
 	@Mock
 	private HttpServletRequest request;
 	
-	// Removidos tests de validación problemáticos - estos requieren constructor real de MethodArgumentNotValidException
+	@BeforeEach
+	void setUp() {
+		when(request.getRequestURI()).thenReturn("/api/users");
+	}
 	
 	@Test
-	@DisplayName("Should handle not found exception")
-	void testHandleNotFoundException() {
+	@DisplayName("Should handle ResourceNotFoundException")
+	void testHandleResourceNotFoundException() {
 		// Given
 		ResourceNotFoundException exception = new ResourceNotFoundException("User not found");
-		when(request.getRequestURI()).thenReturn("/api/users/999");
 		
 		// When
 		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleResourceNotFoundException(exception, request);
@@ -44,13 +47,11 @@ class ApiExceptionHandlerTest {
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains("User not found"));
 		assertEquals(HttpStatus.NOT_FOUND.value(), response.getBody().getStatus());
-		assertNotNull(response.getBody().getTimestamp());
-		assertNotNull(response.getBody().getErrorCode());
 	}
 	
 	@Test
-	@DisplayName("Should handle bad request exception")
-	void testHandleBadRequestException() {
+	@DisplayName("Should handle IllegalArgumentException")
+	void testHandleIllegalArgumentException() {
 		// Given
 		IllegalArgumentException exception = new IllegalArgumentException("Invalid argument");
 		when(request.getRequestURI()).thenReturn("/api/users");

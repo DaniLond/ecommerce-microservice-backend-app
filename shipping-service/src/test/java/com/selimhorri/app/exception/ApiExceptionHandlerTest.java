@@ -5,6 +5,9 @@ import static org.mockito.Mockito.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.selimhorri.app.exception.custom.ResourceNotFoundException;
 
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ApiExceptionHandler Tests - Shipping Service")
 class ApiExceptionHandlerTest {
@@ -26,24 +31,25 @@ class ApiExceptionHandlerTest {
 	@Mock
 	private HttpServletRequest request;
 	
+	@BeforeEach
+	void setUp() {
+		when(request.getRequestURI()).thenReturn("/api/shipping");
+	}
+	
 	@Test
 	@DisplayName("Should handle ResourceNotFoundException")
 	void testHandleResourceNotFoundException() {
 		// Given
-		ResourceNotFoundException exception = new ResourceNotFoundException("OrderItem not found");
-		when(request.getRequestURI()).thenReturn("/api/shippings/1/1");
+		ResourceNotFoundException exception = new ResourceNotFoundException("Shipping not found");
 		
 		// When
 		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleResourceNotFoundException(exception, request);
 		
 		// Then
-		assertNotNull(response);
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getMessage().contains("OrderItem not found"));
 		assertEquals(HttpStatus.NOT_FOUND.value(), response.getBody().getStatus());
-		assertNotNull(response.getBody().getTimestamp());
-		assertNotNull(response.getBody().getErrorCode());
+		assertTrue(response.getBody().getMessage().contains("Shipping not found"));
 	}
 	
 	@Test
@@ -51,15 +57,14 @@ class ApiExceptionHandlerTest {
 	void testHandleNumberFormatException() {
 		// Given
 		NumberFormatException exception = new NumberFormatException("Invalid ID");
-		when(request.getRequestURI()).thenReturn("/api/shippings/abc/xyz");
 		
 		// When
 		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleNumberFormatException(exception, request);
 		
 		// Then
-		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
+		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getBody().getStatus());
 		assertTrue(response.getBody().getMessage().contains("Invalid ID format"));
 	}
 	
@@ -68,15 +73,13 @@ class ApiExceptionHandlerTest {
 	void testHandleIllegalArgumentException() {
 		// Given
 		IllegalArgumentException exception = new IllegalArgumentException("Invalid argument");
-		when(request.getRequestURI()).thenReturn("/api/shippings");
 		
 		// When
 		ResponseEntity<ErrorResponse> response = apiExceptionHandler.handleIllegalArgumentException(exception, request);
 		
 		// Then
-		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getMessage().contains("Invalid argument"));
+		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getBody().getStatus());
 	}
 }

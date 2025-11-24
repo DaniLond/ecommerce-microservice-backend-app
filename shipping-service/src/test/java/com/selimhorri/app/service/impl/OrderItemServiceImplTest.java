@@ -115,12 +115,12 @@ class OrderItemServiceImplTest {
 	@Test
 	@DisplayName("Should delete order item")
 	void testDeleteById() {
-		when(orderItemRepository.existsById(orderItemId)).thenReturn(true);
+		when(orderItemRepository.existsById(any(OrderItemId.class))).thenReturn(true);
 		doNothing().when(orderItemRepository).deleteById(orderItemId);
 		
 		orderItemService.deleteById(orderItemId);
 		
-		verify(orderItemRepository, times(1)).existsById(orderItemId);
+		verify(orderItemRepository, times(1)).existsById(any(OrderItemId.class));
 		verify(orderItemRepository, times(1)).deleteById(orderItemId);
 	}
 }

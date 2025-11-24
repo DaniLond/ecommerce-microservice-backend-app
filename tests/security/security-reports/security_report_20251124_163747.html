@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>E-commerce Security Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background-color: #f0f0f0; padding: 20px; border-radius: 5px; }
+        .summary { margin: 20px 0; }
+        .vulnerability { margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .high { background-color: #ffebee; border-left: 5px solid #f44336; }
+        .medium { background-color: #fff3e0; border-left: 5px solid #ff9800; }
+        .low { background-color: #e8f5e8; border-left: 5px solid #4caf50; }
+        .code { background-color: #f5f5f5; padding: 5px; font-family: monospace; }
+        .stats { display: flex; justify-content: space-around; margin: 20px 0; }
+        .stat { text-align: center; padding: 15px; background-color: #f5f5f5; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ E-commerce Security Test Report</h1>
+        <p><strong>Target:</strong> http://localhost:8080</p>
+        <p><strong>Date:</strong> 2025-11-24 16:37:47</p>
+        <p><strong>Tests Run:</strong> 8</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <h3>0</h3>
+            <p>High Risk</p>
+        </div>
+        <div class="stat">
+            <h3>0</h3>
+            <p>Medium Risk</p>
+        </div>
+        <div class="stat">
+            <h3>38</h3>
+            <p>Low Risk</p>
+        </div>
+        <div class="stat">
+            <h3>38</h3>
+            <p>Total Issues</p>
+        </div>
+    </div>
+
+    <div class="summary">
+        <h2>📊 Executive Summary</h2>
+        <p>This automated security assessment identified <strong>38</strong> potential security issues across the e-commerce microservices architecture.</p>
+        
+        
+        <p><strong>✅ GOOD:</strong> No high-risk vulnerabilities detected.</p>
+    </div>
+
+    <h2>🚨 LOW Risk Vulnerabilities (38)</h2>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-Content-Type-Options header on product_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/products</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.650640</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-Frame-Options header on product_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/products</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.653494</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-XSS-Protection header on product_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/products</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.655738</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on product_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/products</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.657967</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Content-Security-Policy header on product_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/products</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.659604</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on product_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/products</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.662275</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-Content-Type-Options header on category_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/categories</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.687141</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-Frame-Options header on category_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/categories</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.689376</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-XSS-Protection header on category_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/categories</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.691579</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on category_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/categories</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.693727</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Content-Security-Policy header on category_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/categories</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.695433</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on category_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/product-service/api/categories</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.697277</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on user_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/user-service/api/users</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.717854</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on user_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/user-service/api/users</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.720691</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on address_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/user-service/api/address</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.737516</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on address_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/user-service/api/address</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.743552</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on credential_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/user-service/api/credentials</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.763846</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on credential_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/user-service/api/credentials</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.766072</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on order_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/order-service/api/orders</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.789439</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on order_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/order-service/api/orders</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.791660</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on cart_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/order-service/api/carts</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.816546</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on cart_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/order-service/api/carts</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.819567</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on payment_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/payment-service/api/payments</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.849204</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on payment_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/payment-service/api/payments</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.852224</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-Content-Type-Options header on favourite_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/favourite-service/api/favourites</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.931905</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-Frame-Options header on favourite_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/favourite-service/api/favourites</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.935368</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing X-XSS-Protection header on favourite_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/favourite-service/api/favourites</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.938848</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on favourite_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/favourite-service/api/favourites</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.942843</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Content-Security-Policy header on favourite_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/favourite-service/api/favourites</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.947253</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on favourite_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/favourite-service/api/favourites</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.950774</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on shipping_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/shipping-service/api/shippings</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.980347</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on shipping_service</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/shipping-service/api/shippings</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:46.984920</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on proxy_client</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/app/api</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:47.008057</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Content-Security-Policy header on proxy_client</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/app/api</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:47.012152</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on proxy_client</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/app/api</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:47.017349</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Strict-Transport-Security header on auth_endpoint</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/app/api/authenticate</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:47.054200</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Content-Security-Policy header on auth_endpoint</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/app/api/authenticate</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:47.057574</p>
+    </div>
+
+    <div class="vulnerability low">
+        <h3>Missing Security Header</h3>
+        <p><strong>Description:</strong> Missing Referrer-Policy header on auth_endpoint</p>
+        <p><strong>Endpoint:</strong> <code>http://localhost:8080/app/api/authenticate</code></p>
+        
+        <p><strong>Timestamp:</strong> 2025-11-24T16:37:47.059850</p>
+    </div>
+
+    <div class="summary">
+        <h2>🔧 Recommendations</h2>
+        <ul>
+            <li><strong>Fix HIGH risk vulnerabilities immediately</strong></li>
+            <li><strong>Implement input validation and sanitization</strong></li>
+            <li><strong>Add proper authentication and authorization checks</strong></li>
+            <li><strong>Configure security headers correctly</strong></li>
+            <li><strong>Review CORS configuration</strong></li>
+            <li><strong>Implement regular security testing in CI/CD</strong></li>
+        </ul>
+    </div>
+</body>
+</html>

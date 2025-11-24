@@ -8,8 +8,21 @@ import org.junit.jupiter.api.Test;
 import com.selimhorri.app.exception.ErrorCode;
 import com.selimhorri.app.exception.custom.ResourceNotFoundException;
 
-@DisplayName("ResourceNotFoundException Tests")
+@DisplayName("UserObjectNotFoundException Tests")
 class UserObjectNotFoundExceptionTest {
+	
+	@Test
+	@DisplayName("Should create exception with default constructor")
+	void testDefaultConstructor() {
+		// When
+		UserObjectNotFoundException exception = new UserObjectNotFoundException();
+		
+		// Then
+		assertNotNull(exception);
+		assertNotNull(exception.getMessage());
+		assertNotNull(exception.getErrorCode());
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+	}
 	
 	@Test
 	@DisplayName("Should create exception with message")
@@ -23,50 +36,38 @@ class UserObjectNotFoundExceptionTest {
 		// Then
 		assertNotNull(exception);
 		assertEquals(message, exception.getMessage());
-		assertNotNull(exception.getErrorCode());
-	}
-	
-	@Test
-	@DisplayName("Should create exception with error code")
-	void testConstructorWithErrorCode() {
-		// When
-		ResourceNotFoundException exception = new ResourceNotFoundException(ErrorCode.USER_NOT_FOUND);
-		
-		// Then
-		assertNotNull(exception);
-		assertNotNull(exception.getMessage());
 		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
 	}
 	
 	@Test
-	@DisplayName("Should create exception with error code and formatted message")
+	@DisplayName("Should create exception with ErrorCode")
+	void testConstructorWithErrorCode() {
+		// Given
+		ErrorCode errorCode = ErrorCode.USER_NOT_FOUND;
+		
+		// When
+		UserObjectNotFoundException exception = new UserObjectNotFoundException(errorCode);
+		
+		// Then
+		assertNotNull(exception);
+		assertEquals(errorCode, exception.getErrorCode());
+		assertNotNull(exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Should create exception with ErrorCode and arguments")
 	void testConstructorWithErrorCodeAndArgs() {
 		// Given
-		Integer userId = 999;
+		ErrorCode errorCode = ErrorCode.USER_NOT_FOUND;
+		Object[] args = {999};
 		
 		// When
-		ResourceNotFoundException exception = new ResourceNotFoundException(
-			ErrorCode.USER_NOT_FOUND, userId
-		);
+		UserObjectNotFoundException exception = new UserObjectNotFoundException(errorCode, args);
 		
 		// Then
 		assertNotNull(exception);
+		assertEquals(errorCode, exception.getErrorCode());
 		assertNotNull(exception.getMessage());
-		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-	}
-	
-	@Test
-	@DisplayName("Should have error code when created with message")
-	void testErrorCodeWithMessage() {
-		// Given
-		String message = "User with id: 123 not found";
-		
-		// When
-		ResourceNotFoundException exception = new ResourceNotFoundException(message);
-		
-		// Then
-		assertNotNull(exception.getErrorCode());
-		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
 	}
 	
 	@Test
@@ -90,5 +91,16 @@ class UserObjectNotFoundExceptionTest {
 		// Then
 		assertNotNull(exception.getStackTrace());
 		assertTrue(exception.getStackTrace().length > 0);
+	}
+	
+	@Test
+	@DisplayName("Should have error code accessor")
+	void testGetErrorCode() {
+		// When
+		UserObjectNotFoundException exception = new UserObjectNotFoundException("User not found");
+		
+		// Then
+		assertNotNull(exception.getErrorCode());
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
 	}
 }
