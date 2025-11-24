@@ -5,18 +5,18 @@ Configuración global para las pruebas e2e.
 import pytest
 import uuid
 import time
+import base64
 from typing import Dict, List
 import requests
 from config.config import (
     API_GATEWAY_URL,
-    AUTH_ENDPOINT,
     TEST_USER,
+    TEST_ADMIN,
     REQUEST_TIMEOUT,
     SERVICES_CONFIG,
     E2E_CONFIG,
 )
 
-_jwt_token = None
 _current_service = ""
 
 
@@ -29,39 +29,30 @@ def set_current_service(service_name):
         raise ValueError(f"Servicio '{service_name}' no está configurado")
 
 
-def get_auth_token():
-    """Obtiene un token JWT de autenticación."""
-    global _jwt_token
-
-    if _jwt_token:
-        return _jwt_token
-
-    try:
-        response = requests.post(
-            AUTH_ENDPOINT,
-            json={"username": TEST_USER["username"], "password": TEST_USER["password"]},
-            headers={"Content-Type": "application/json", "Accept": "application/json"},
-            timeout=REQUEST_TIMEOUT,
-        )
-
-        if response.status_code == 200:
-            auth_data = response.json()
-            _jwt_token = auth_data.get("jwtToken")
-            if _jwt_token:
-                return _jwt_token
-            else:
-                raise Exception(f"Token no encontrado en la respuesta: {auth_data}")
-        else:
-            raise Exception(
-                f"Error {response.status_code} al obtener token: {response.text}"
-            )
-
-    except requests.exceptions.RequestException as e:
-        raise Exception(f"Error de conexión al obtener token: {e}")
+def get_headers(service_name=None, use_admin=False):
+    """Obtiene los headers incluyendo autenticación HTTP Basic si es necesaria."""
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    
+    if service_name is None:
+        service_name = _current_service
+    
+    service_config = SERVICES_CONFIG.get(service_name, {})
+    requires_auth = service_config.get("requires_auth", False)
+    
+    if requires_auth:
+        # Usar HTTP Basic Authentication
+        credentials = TEST_ADMIN if use_admin else TEST_USER
+        auth_string = f"{credentials['username']}:{credentials['password']}"
+        auth_bytes = auth_string.encode('ascii')
+        base64_bytes = base64.b64encode(auth_bytes)
+        base64_string = base64_bytes.decode('ascii')
+        headers["Authorization"] = f"Basic {base64_string}"
+    
+    return headers
 
 
 def make_request(
-    method, endpoint, data=None, params=None, headers=None, service_name=None
+    method, endpoint, data=None, params=None, headers=None, service_name=None, use_admin=False
 ):
     """Realiza una solicitud HTTP al servicio especificado."""
     if service_name is None:
@@ -70,6 +61,10 @@ def make_request(
     service_config = SERVICES_CONFIG.get(service_name)
     if not service_config:
         raise ValueError(f"Servicio '{service_name}' no está configurado")
+
+    # Auto-detect: use admin credentials for PUT/PATCH/DELETE on secured services
+    if not use_admin and method.upper() in ['PUT', 'PATCH', 'DELETE'] and service_config.get('requires_auth', False):
+        use_admin = True
 
     # Construir URL completa
     if endpoint.startswith("/"):
@@ -84,11 +79,7 @@ def make_request(
         url = f"{base_url}/{endpoint}"
 
     # Headers según el servicio
-    request_headers = {"Content-Type": "application/json", "Accept": "application/json"}
-
-    if service_config.get("requires_auth", True):
-        token = get_auth_token()
-        request_headers["Authorization"] = f"Bearer {token}"
+    request_headers = get_headers(service_name, use_admin)
 
     if headers:
         request_headers.update(headers)

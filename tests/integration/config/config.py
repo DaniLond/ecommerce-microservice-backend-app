@@ -34,32 +34,32 @@ SERVICES_CONFIG = {
     },
     "user-service": {
         "url": f"{API_GATEWAY_URL}/user-service",
-        "requires_auth": False,  # ⚠️ Deshabilitado temporalmente - acceso directo sin autenticación
+        "requires_auth": True,  # ✅ Autenticación HTTP Basic habilitada
         "path_prefix": "",
     },
     "product-service": {
         "url": f"{API_GATEWAY_URL}/product-service",
-        "requires_auth": False,  # ⚠️ Deshabilitado temporalmente - acceso directo sin autenticación
+        "requires_auth": False,  # Sin Spring Security implementado
         "path_prefix": "",
     },
     "order-service": {
         "url": f"{API_GATEWAY_URL}/order-service",
-        "requires_auth": False,  # ⚠️ Deshabilitado temporalmente - acceso directo sin autenticación
+        "requires_auth": True,  # ✅ Autenticación HTTP Basic habilitada
         "path_prefix": "",
     },
     "payment-service": {
         "url": f"{API_GATEWAY_URL}/payment-service",
-        "requires_auth": False,  # ⚠️ Deshabilitado temporalmente - acceso directo sin autenticación
+        "requires_auth": True,  # ✅ Autenticación HTTP Basic habilitada
         "path_prefix": "",
     },
     "favourite-service": {
         "url": f"{API_GATEWAY_URL}/favourite-service",
-        "requires_auth": False,  # ⚠️ Deshabilitado temporalmente - acceso directo sin autenticación
+        "requires_auth": False,  # Sin Spring Security implementado
         "path_prefix": "",
     },
     "shipping-service": {
         "url": f"{API_GATEWAY_URL}/shipping-service",
-        "requires_auth": False,  # ⚠️ Deshabilitado temporalmente - acceso directo sin autenticación
+        "requires_auth": True,  # ✅ Autenticación HTTP Basic habilitada
         "path_prefix": "",
     },
 }
@@ -71,8 +71,14 @@ JWT_TOKEN = None  # Se establecerá durante la ejecución de las pruebas
 # Tiempo de espera para las solicitudes (en segundos)
 REQUEST_TIMEOUT = 10
 
-# Usuario de prueba para autenticación
+# Usuario de prueba para autenticación HTTP Basic
+# Usuarios configurados en SecurityConfig: user/password (USER), admin/admin (USER+ADMIN)
 TEST_USER = {
-    "username": "selimhorri",
-    "password": "12345",
+    "username": "user",
+    "password": "password",
+}
+
+TEST_ADMIN = {
+    "username": "admin",
+    "password": "admin",
 }

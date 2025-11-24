@@ -1,0 +1,315 @@
+{
+  "test_results": {
+    "timestamp": "2025-11-24T16:37:38.072118",
+    "target": "http://localhost:8080",
+    "tests_run": 8,
+    "vulnerabilities_found": 38,
+    "services_tested": []
+  },
+  "vulnerabilities": [
+    {
+      "timestamp": "2025-11-24T16:37:46.650640",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-Content-Type-Options header on product_service",
+      "endpoint": "http://localhost:8080/product-service/api/products",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.653494",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-Frame-Options header on product_service",
+      "endpoint": "http://localhost:8080/product-service/api/products",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.655738",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-XSS-Protection header on product_service",
+      "endpoint": "http://localhost:8080/product-service/api/products",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.657967",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on product_service",
+      "endpoint": "http://localhost:8080/product-service/api/products",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.659604",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Content-Security-Policy header on product_service",
+      "endpoint": "http://localhost:8080/product-service/api/products",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.662275",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on product_service",
+      "endpoint": "http://localhost:8080/product-service/api/products",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.687141",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-Content-Type-Options header on category_service",
+      "endpoint": "http://localhost:8080/product-service/api/categories",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.689376",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-Frame-Options header on category_service",
+      "endpoint": "http://localhost:8080/product-service/api/categories",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.691579",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-XSS-Protection header on category_service",
+      "endpoint": "http://localhost:8080/product-service/api/categories",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.693727",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on category_service",
+      "endpoint": "http://localhost:8080/product-service/api/categories",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.695433",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Content-Security-Policy header on category_service",
+      "endpoint": "http://localhost:8080/product-service/api/categories",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.697277",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on category_service",
+      "endpoint": "http://localhost:8080/product-service/api/categories",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.717854",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on user_service",
+      "endpoint": "http://localhost:8080/user-service/api/users",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.720691",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on user_service",
+      "endpoint": "http://localhost:8080/user-service/api/users",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.737516",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on address_service",
+      "endpoint": "http://localhost:8080/user-service/api/address",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.743552",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on address_service",
+      "endpoint": "http://localhost:8080/user-service/api/address",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.763846",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on credential_service",
+      "endpoint": "http://localhost:8080/user-service/api/credentials",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.766072",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on credential_service",
+      "endpoint": "http://localhost:8080/user-service/api/credentials",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.789439",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on order_service",
+      "endpoint": "http://localhost:8080/order-service/api/orders",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.791660",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on order_service",
+      "endpoint": "http://localhost:8080/order-service/api/orders",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.816546",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on cart_service",
+      "endpoint": "http://localhost:8080/order-service/api/carts",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.819567",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on cart_service",
+      "endpoint": "http://localhost:8080/order-service/api/carts",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.849204",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on payment_service",
+      "endpoint": "http://localhost:8080/payment-service/api/payments",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.852224",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on payment_service",
+      "endpoint": "http://localhost:8080/payment-service/api/payments",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.931905",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-Content-Type-Options header on favourite_service",
+      "endpoint": "http://localhost:8080/favourite-service/api/favourites",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.935368",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-Frame-Options header on favourite_service",
+      "endpoint": "http://localhost:8080/favourite-service/api/favourites",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.938848",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing X-XSS-Protection header on favourite_service",
+      "endpoint": "http://localhost:8080/favourite-service/api/favourites",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.942843",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on favourite_service",
+      "endpoint": "http://localhost:8080/favourite-service/api/favourites",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.947253",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Content-Security-Policy header on favourite_service",
+      "endpoint": "http://localhost:8080/favourite-service/api/favourites",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.950774",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on favourite_service",
+      "endpoint": "http://localhost:8080/favourite-service/api/favourites",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.980347",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on shipping_service",
+      "endpoint": "http://localhost:8080/shipping-service/api/shippings",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:46.984920",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on shipping_service",
+      "endpoint": "http://localhost:8080/shipping-service/api/shippings",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:47.008057",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on proxy_client",
+      "endpoint": "http://localhost:8080/app/api",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:47.012152",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Content-Security-Policy header on proxy_client",
+      "endpoint": "http://localhost:8080/app/api",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:47.017349",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on proxy_client",
+      "endpoint": "http://localhost:8080/app/api",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:47.054200",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Strict-Transport-Security header on auth_endpoint",
+      "endpoint": "http://localhost:8080/app/api/authenticate",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:47.057574",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Content-Security-Policy header on auth_endpoint",
+      "endpoint": "http://localhost:8080/app/api/authenticate",
+      "payload": null
+    },
+    {
+      "timestamp": "2025-11-24T16:37:47.059850",
+      "severity": "LOW",
+      "category": "Missing Security Header",
+      "description": "Missing Referrer-Policy header on auth_endpoint",
+      "endpoint": "http://localhost:8080/app/api/authenticate",
+      "payload": null
+    }
+  ]
+}

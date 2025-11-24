@@ -1,5 +1,6 @@
 import random
 import time
+import base64
 from locust import HttpUser, task, between, SequentialTaskSet
 from faker import Faker
 
@@ -121,62 +122,26 @@ class CheckoutFlow(SequentialTaskSet):
 
 class EcommerceUser(HttpUser):
     wait_time = between(2, 6)
-    jwt_token = None
     user_id = None
     auth_headers = {}
 
     def on_start(self):
-        """Autenticar y obtener datos del usuario al iniciar"""
-        self.authenticate_user()
+        """Configurar autenticación HTTP Basic y datos del usuario al iniciar"""
+        self.setup_auth()
 
-    def authenticate_user(self):
-        """Autenticar usando las rutas reales del sistema"""
-        usernames = ["selimhorri", "amineladjimi", "omarderouiche", "admin"]
-        username = random.choice(usernames)
+    def setup_auth(self):
+        """Configurar autenticación HTTP Basic Auth"""
+        # Usar credenciales configuradas en Spring Security
+        username = "user"
+        password = "password"
         
-        try:
-            auth_response = self.client.post(
-                "/app/api/authenticate",
-                json={
-                    "username": username,
-                    "password": "password"
-                },
-                name="Authenticate (Proxy)",
-                catch_response=True
-            )
-            
-            if auth_response.status_code == 200:
-                try:
-                    self.jwt_token = auth_response.json().get("jwtToken")
-                    self.auth_headers = {"Authorization": f"Bearer {self.jwt_token}"}
-                    
-                    user_response = self.client.get(
-                        f"/user-service/api/users/username/{username}",
-                        headers=self.auth_headers,
-                        name="Get User by Username"
-                    )
-                    
-                    if user_response.status_code == 200:
-                        user_data = user_response.json()
-                        if 'data' in user_data:
-                            self.user_id = user_data['data'].get("userId")
-                        else:
-                            self.user_id = user_data.get("userId")
-                    
-                    auth_response.success()
-                except Exception as e:
-                    auth_response.failure(f"Auth parsing error: {e}")
-                    self.stop()
-            else:
-                auth_response.failure(f"Auth failed: {auth_response.status_code}")
-                user_mapping = {"selimhorri": 1, "amineladjimi": 2, "omarderouiche": 3, "admin": 4}
-                self.user_id = user_mapping.get(username, 1)
-                self.auth_headers = {}
-                
-        except Exception as e:
-            print(f"Authentication error: {e}")
-            self.user_id = random.randint(1, 4)
-            self.auth_headers = {}
+        # Crear header de autenticación HTTP Basic
+        credentials = f"{username}:{password}"
+        encoded_credentials = base64.b64encode(credentials.encode('ascii')).decode('ascii')
+        self.auth_headers = {"Authorization": f"Basic {encoded_credentials}"}
+        
+        # Asignar un user_id para simulación (1-4 son los usuarios de prueba)
+        self.user_id = random.randint(1, 4)
 
     @task(10)
     def browse_products_catalog(self):
@@ -233,10 +198,15 @@ class EcommerceUser(HttpUser):
         if self.auth_headers and self.user_id:
             self.client.get("/favourite-service/api/favourites", headers=self.auth_headers, name="Get All Favourites")
 
+            # Formato de fecha requerido: dd-MM-yyyy__HH:mm:ss:SSSSSS
+            from datetime import datetime
+            current_time = datetime.now()
+            formatted_date = current_time.strftime("%d-%m-%Y__%H:%M:%S:000000")
+            
             favourite_data = {
                 "userId": self.user_id,
                 "productId": random.randint(1, 4),
-                "likeDate": "2024-12-01T10:00:00"
+                "likeDate": formatted_date
             }
             
             self.client.post("/favourite-service/api/favourites", json=favourite_data, headers=self.auth_headers, name="Add to Favourites")

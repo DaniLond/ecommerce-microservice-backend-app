@@ -21,7 +21,7 @@ import com.selimhorri.app.domain.RoleBasedAuthority;
 import com.selimhorri.app.domain.User;
 import com.selimhorri.app.dto.CredentialDto;
 import com.selimhorri.app.dto.UserDto;
-import com.selimhorri.app.exception.wrapper.UserObjectNotFoundException;
+import com.selimhorri.app.exception.custom.ResourceNotFoundException;
 import com.selimhorri.app.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,7 +100,7 @@ class UserServiceImplTest {
 		user2.setLastName("Smith");
 		user2.setCredential(credential2);
 		
-		when(userRepository.findAll()).thenReturn(Arrays.asList(user, user2));
+		when(userRepository.findAllWithCredentials()).thenReturn(Arrays.asList(user, user2));
 		
 		// When
 		List<UserDto> result = userService.findAll();
@@ -108,14 +108,14 @@ class UserServiceImplTest {
 		// Then
 		assertNotNull(result);
 		assertEquals(2, result.size());
-		verify(userRepository, times(1)).findAll();
+		verify(userRepository, times(1)).findAllWithCredentials();
 	}
 	
 	@Test
 	@DisplayName("Should find user by id successfully")
 	void testFindById() {
 		// Given
-		when(userRepository.findById(1)).thenReturn(Optional.of(user));
+		when(userRepository.findByIdWithCredential(1)).thenReturn(Optional.of(user));
 		
 		// When
 		UserDto result = userService.findById(1);
@@ -124,23 +124,23 @@ class UserServiceImplTest {
 		assertNotNull(result);
 		assertEquals(1, result.getUserId());
 		assertEquals("John", result.getFirstName());
-		verify(userRepository, times(1)).findById(1);
+		verify(userRepository, times(1)).findByIdWithCredential(1);
 	}
 	
 	@Test
 	@DisplayName("Should throw exception when user not found by id")
 	void testFindByIdNotFound() {
 		// Given
-		when(userRepository.findById(999)).thenReturn(Optional.empty());
+		when(userRepository.findByIdWithCredential(999)).thenReturn(Optional.empty());
 		
 		// When & Then
-		UserObjectNotFoundException exception = assertThrows(
-			UserObjectNotFoundException.class,
+		ResourceNotFoundException exception = assertThrows(
+			ResourceNotFoundException.class,
 			() -> userService.findById(999)
 		);
 		
-		assertTrue(exception.getMessage().contains("User with id: 999 not found"));
-		verify(userRepository, times(1)).findById(999);
+		assertTrue(exception.getMessage().contains("User with id 999 not found"));
+		verify(userRepository, times(1)).findByIdWithCredential(999);
 	}
 	
 	@Test
@@ -162,6 +162,8 @@ class UserServiceImplTest {
 	@DisplayName("Should update user successfully")
 	void testUpdate() {
 		// Given
+		when(userRepository.existsById(1)).thenReturn(true);
+		when(userRepository.findById(1)).thenReturn(Optional.of(user));
 		when(userRepository.save(any(User.class))).thenReturn(user);
 		
 		// When
@@ -170,6 +172,8 @@ class UserServiceImplTest {
 		// Then
 		assertNotNull(result);
 		assertEquals("John", result.getFirstName());
+		verify(userRepository, times(1)).existsById(1);
+		verify(userRepository, times(1)).findById(1);
 		verify(userRepository, times(1)).save(any(User.class));
 	}
 	
@@ -177,6 +181,8 @@ class UserServiceImplTest {
 	@DisplayName("Should update user with userId successfully")
 	void testUpdateWithUserId() {
 		// Given
+		when(userRepository.findByIdWithCredential(1)).thenReturn(Optional.of(user));
+		when(userRepository.existsById(1)).thenReturn(true);
 		when(userRepository.findById(1)).thenReturn(Optional.of(user));
 		when(userRepository.save(any(User.class))).thenReturn(user);
 		
@@ -185,7 +191,7 @@ class UserServiceImplTest {
 		
 		// Then
 		assertNotNull(result);
-		verify(userRepository, times(1)).findById(1);
+		verify(userRepository, times(1)).findByIdWithCredential(1);
 		verify(userRepository, times(1)).save(any(User.class));
 	}
 	
@@ -193,12 +199,14 @@ class UserServiceImplTest {
 	@DisplayName("Should delete user by id successfully")
 	void testDeleteById() {
 		// Given
+		when(userRepository.existsById(1)).thenReturn(true);
 		doNothing().when(userRepository).deleteById(1);
 		
 		// When
 		userService.deleteById(1);
 		
 		// Then
+		verify(userRepository, times(1)).existsById(1);
 		verify(userRepository, times(1)).deleteById(1);
 	}
 	
@@ -224,12 +232,12 @@ class UserServiceImplTest {
 		when(userRepository.findByCredentialUsername("unknown")).thenReturn(Optional.empty());
 		
 		// When & Then
-		UserObjectNotFoundException exception = assertThrows(
-			UserObjectNotFoundException.class,
+		ResourceNotFoundException exception = assertThrows(
+			ResourceNotFoundException.class,
 			() -> userService.findByUsername("unknown")
 		);
 		
-		assertTrue(exception.getMessage().contains("User with username: unknown not found"));
+		assertTrue(exception.getMessage().contains("User with username unknown not found"));
 		verify(userRepository, times(1)).findByCredentialUsername("unknown");
 	}
 }

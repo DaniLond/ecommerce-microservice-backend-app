@@ -9,7 +9,7 @@ services:
       - microservices_network
 
   service-discovery-container:
-    image: DaniLond/service-discovery-ecommerce-boot:0.1.0
+    image: danilond/service-discovery-ecommerce-boot:0.1.0
     ports:
       - "8761:8761"
     networks:
@@ -20,7 +20,7 @@ services:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://cloud-config-container:9296/
 
   cloud-config-container:
-    image: DaniLond/cloud-config-ecommerce-boot:0.1.0
+    image: danilond/cloud-config-ecommerce-boot:0.1.0
     ports:
       - "9296:9296"
     networks:

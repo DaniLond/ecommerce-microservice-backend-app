@@ -256,6 +256,7 @@ class SecurityTestSuite:
         for endpoint in protected_endpoints:
             url = urljoin(self.base_url, endpoint)
             try:
+                # Test 1: Without authentication (should be 401)
                 response = self.session.get(url)
                 
                 if response.status_code == 200:
@@ -265,7 +266,10 @@ class SecurityTestSuite:
                         f'Protected endpoint accessible without authentication',
                         url
                     )
-                elif response.status_code not in [401, 403]:
+                elif response.status_code == 401:
+                    # This is correct - endpoint is protected
+                    logger.info(f"✓ {endpoint} correctly requires authentication")
+                elif response.status_code not in [401, 403, 404]:
                     # Unexpected response might indicate issues
                     logger.info(f"Unexpected response {response.status_code} for {url}")
             except Exception as e:
@@ -322,12 +326,26 @@ class SecurityTestSuite:
         """Test for information disclosure vulnerabilities"""
         logger.info("🔍 Testing information disclosure...")
         
-        # Test common sensitive files/endpoints
-        sensitive_paths = [
-            '/actuator/health',
-            '/actuator/env',
-            '/actuator/configprops',
-            '/actuator/mappings',
+        # Test actuator endpoints (should require ADMIN role for sensitive ones)
+        admin_only_paths = [
+            '/user-service/actuator/env',
+            '/order-service/actuator/env',
+            '/payment-service/actuator/env',
+            '/shipping-service/actuator/env',
+            '/user-service/actuator/configprops',
+            '/order-service/actuator/configprops',
+            '/payment-service/actuator/configprops',
+            '/shipping-service/actuator/configprops',
+            '/user-service/actuator/mappings',
+            '/order-service/actuator/mappings',
+            '/payment-service/actuator/mappings',
+            '/shipping-service/actuator/mappings'
+        ]
+        
+        # Test other potentially sensitive paths
+        public_or_protected_paths = [
+            '/actuator/health',  # Should be public
+            '/actuator/info',    # Should be public
             '/swagger-ui.html',
             '/v2/api-docs',
             '/api/v1/swagger.json',
@@ -342,25 +360,49 @@ class SecurityTestSuite:
             '/debug'
         ]
         
-        for path in sensitive_paths:
+        # Test admin-only actuator endpoints without auth
+        for path in admin_only_paths:
             url = urljoin(self.base_url, path)
             try:
                 response = self.session.get(url)
                 
                 if response.status_code == 200:
-                    # Check for sensitive information
+                    # Accessible without auth - vulnerability
                     content = response.text.lower()
-                    sensitive_keywords = ['password', 'secret', 'key', 'token', 'database', 'config']
-                    
-                    if any(keyword in content for keyword in sensitive_keywords):
+                    if any(keyword in content for keyword in ['password', 'secret', 'key', 'token', 'database', 'config']):
                         self.log_vulnerability(
                             'MEDIUM',
                             'Information Disclosure',
                             f'Sensitive information exposed at {path}',
                             url
                         )
-                    else:
-                        logger.info(f"Accessible endpoint found: {path}")
+                elif response.status_code == 401:
+                    # Requires authentication - good
+                    logger.info(f"✓ {path} correctly requires authentication")
+                elif response.status_code == 403:
+                    # Forbidden - might need ADMIN role (good)
+                    logger.info(f"✓ {path} correctly requires authorization")
+            except Exception as e:
+                logger.debug(f"Info disclosure test error: {e}")
+        
+        # Test other paths
+        for path in public_or_protected_paths:
+            url = urljoin(self.base_url, path)
+            try:
+                response = self.session.get(url)
+                
+                if response.status_code == 200:
+                    content = response.text.lower()
+                    sensitive_keywords = ['password', 'secret', 'key', 'token', 'database']
+                    
+                    if any(keyword in content for keyword in sensitive_keywords):
+                        if 'health' not in path and 'info' not in path:
+                            self.log_vulnerability(
+                                'MEDIUM',
+                                'Information Disclosure',
+                                f'Sensitive information exposed at {path}',
+                                url
+                            )
             except Exception as e:
                 logger.debug(f"Info disclosure test error: {e}")
 
@@ -368,24 +410,52 @@ class SecurityTestSuite:
         """Test for dangerous HTTP methods"""
         logger.info("🔍 Testing dangerous HTTP methods...")
         
-        dangerous_methods = ['TRACE', 'TRACK', 'DELETE', 'PUT', 'PATCH']
+        # TRACE/TRACK should always be blocked (HIGH risk)
+        always_blocked_methods = ['TRACE', 'TRACK']
+        # PUT/PATCH/DELETE should require ADMIN role (MEDIUM risk if not protected)
+        admin_only_methods = ['DELETE', 'PUT', 'PATCH']
         
         for endpoint_name, endpoint_path in self.endpoints.items():
             url = urljoin(self.base_url, endpoint_path)
             
-            for method in dangerous_methods:
+            # Test TRACE/TRACK - should always be 405
+            for method in always_blocked_methods:
                 try:
                     response = self.session.request(method, url)
                     
                     if response.status_code not in [405, 501, 404]:
-                        severity = 'HIGH' if method in ['TRACE', 'TRACK'] else 'MEDIUM'
                         self.log_vulnerability(
-                            severity,
+                            'HIGH',
                             'HTTP Method',
                             f'Dangerous HTTP method {method} allowed on {endpoint_name}',
                             url,
                             method
                         )
+                    else:
+                        logger.info(f"✓ {method} correctly blocked on {endpoint_name}")
+                except Exception as e:
+                    logger.debug(f"HTTP method test error: {e}")
+            
+            # Test PUT/PATCH/DELETE - should require authentication (401) or authorization (403)
+            for method in admin_only_methods:
+                try:
+                    response = self.session.request(method, url)
+                    
+                    if response.status_code == 200:
+                        # Method accepted without auth - vulnerability
+                        self.log_vulnerability(
+                            'MEDIUM',
+                            'HTTP Method',
+                            f'Dangerous HTTP method {method} allowed on {endpoint_name}',
+                            url,
+                            method
+                        )
+                    elif response.status_code in [401, 403]:
+                        # Requires auth/authorization - good
+                        logger.info(f"✓ {method} requires authentication on {endpoint_name}")
+                    elif response.status_code not in [405, 501, 404]:
+                        # Unexpected status
+                        logger.info(f"Unexpected {response.status_code} for {method} on {endpoint_name}")
                 except Exception as e:
                     logger.debug(f"HTTP method test error: {e}")
 
@@ -557,12 +627,12 @@ class SecurityTestSuite:
 </html>
 """
         
-        with open(report_file, 'w') as f:
+        with open(report_file, 'w', encoding='utf-8') as f:
             f.write(html_report)
         
         # Also generate JSON report
         json_report_file = f"security-reports/security_report_{timestamp}.json"
-        with open(json_report_file, 'w') as f:
+        with open(json_report_file, 'w', encoding='utf-8') as f:
             json.dump({
                 'test_results': self.test_results,
                 'vulnerabilities': self.vulnerabilities

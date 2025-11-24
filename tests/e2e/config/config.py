@@ -16,7 +16,7 @@ SERVICES_CONFIG = {
     },
     "user-service": {
         "url": f"{API_GATEWAY_URL}/user-service",
-        "requires_auth": False,
+        "requires_auth": True,
         "path_prefix": "",
     },
     "product-service": {
@@ -26,12 +26,12 @@ SERVICES_CONFIG = {
     },
     "order-service": {
         "url": f"{API_GATEWAY_URL}/order-service",
-        "requires_auth": False,
+        "requires_auth": True,
         "path_prefix": "",
     },
     "payment-service": {
         "url": f"{API_GATEWAY_URL}/payment-service",
-        "requires_auth": False,
+        "requires_auth": True,
         "path_prefix": "",
     },
     "favourite-service": {
@@ -41,7 +41,7 @@ SERVICES_CONFIG = {
     },
     "shipping-service": {
         "url": f"{API_GATEWAY_URL}/shipping-service",
-        "requires_auth": False,
+        "requires_auth": True,
         "path_prefix": "",
     },
     "proxy-client": {
@@ -57,10 +57,15 @@ AUTH_ENDPOINT = f"{API_GATEWAY_URL}/app/api/authenticate"
 # Tiempo de espera para las solicitudes (en segundos)
 REQUEST_TIMEOUT = 15
 
-# Usuario de prueba para autenticación
+# Usuarios de prueba para autenticación HTTP Basic
 TEST_USER = {
-    "username": "selimhorri",
-    "password": "12345",
+    "username": "user",
+    "password": "password",
+}
+
+TEST_ADMIN = {
+    "username": "admin",
+    "password": "admin",
 }
 
 # Configuración específica para E2E

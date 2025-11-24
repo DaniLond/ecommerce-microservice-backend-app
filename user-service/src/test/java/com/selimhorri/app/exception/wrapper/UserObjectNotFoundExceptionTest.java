@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.selimhorri.app.exception.ErrorCode;
+
 @DisplayName("UserObjectNotFoundException Tests")
 class UserObjectNotFoundExceptionTest {
 	
@@ -16,7 +18,9 @@ class UserObjectNotFoundExceptionTest {
 		
 		// Then
 		assertNotNull(exception);
-		assertNull(exception.getMessage());
+		assertNotNull(exception.getMessage());
+		assertNotNull(exception.getErrorCode());
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
 	}
 	
 	@Test
@@ -31,36 +35,38 @@ class UserObjectNotFoundExceptionTest {
 		// Then
 		assertNotNull(exception);
 		assertEquals(message, exception.getMessage());
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
 	}
 	
 	@Test
-	@DisplayName("Should create exception with message and cause")
-	void testConstructorWithMessageAndCause() {
+	@DisplayName("Should create exception with ErrorCode")
+	void testConstructorWithErrorCode() {
 		// Given
-		String message = "User not found";
-		Throwable cause = new RuntimeException("Database error");
+		ErrorCode errorCode = ErrorCode.USER_NOT_FOUND;
 		
 		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException(message, cause);
+		UserObjectNotFoundException exception = new UserObjectNotFoundException(errorCode);
 		
 		// Then
 		assertNotNull(exception);
-		assertEquals(message, exception.getMessage());
-		assertEquals(cause, exception.getCause());
+		assertEquals(errorCode, exception.getErrorCode());
+		assertNotNull(exception.getMessage());
 	}
 	
 	@Test
-	@DisplayName("Should create exception with cause")
-	void testConstructorWithCause() {
+	@DisplayName("Should create exception with ErrorCode and arguments")
+	void testConstructorWithErrorCodeAndArgs() {
 		// Given
-		Throwable cause = new RuntimeException("Database error");
+		ErrorCode errorCode = ErrorCode.USER_NOT_FOUND;
+		Object[] args = {999};
 		
 		// When
-		UserObjectNotFoundException exception = new UserObjectNotFoundException(cause);
+		UserObjectNotFoundException exception = new UserObjectNotFoundException(errorCode, args);
 		
 		// Then
 		assertNotNull(exception);
-		assertEquals(cause, exception.getCause());
+		assertEquals(errorCode, exception.getErrorCode());
+		assertNotNull(exception.getMessage());
 	}
 	
 	@Test
@@ -84,5 +90,16 @@ class UserObjectNotFoundExceptionTest {
 		// Then
 		assertNotNull(exception.getStackTrace());
 		assertTrue(exception.getStackTrace().length > 0);
+	}
+	
+	@Test
+	@DisplayName("Should have error code accessor")
+	void testGetErrorCode() {
+		// When
+		UserObjectNotFoundException exception = new UserObjectNotFoundException("User not found");
+		
+		// Then
+		assertNotNull(exception.getErrorCode());
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
 	}
 }

@@ -74,13 +74,14 @@ def get_auth_token():
         return None
 
 
-def get_headers(service_name=None, token=None):
+def get_headers(service_name=None, token=None, use_admin=False):
     """
     Genera headers para las solicitudes según el servicio.
 
     Args:
         service_name (str, optional): Nombre del servicio. Si es None, usa el servicio actual.
-        token (str, optional): Token JWT. Si es None, se obtendrá uno nuevo.
+        token (str, optional): Token JWT (deprecado, se usa HTTP Basic Auth ahora).
+        use_admin (bool, optional): Si es True, usa credenciales de admin en lugar de user.
 
     Returns:
         dict: Headers para las solicitudes.
@@ -97,17 +98,22 @@ def get_headers(service_name=None, token=None):
     }
 
     if requires_auth:
-        if token is None:
-            token = get_auth_token()
-        # Solo agregar Authorization header si tenemos un token válido
-        if token:
-            headers["Authorization"] = f"Bearer {token}"
+        # Usar HTTP Basic Authentication
+        from config.config import TEST_USER, TEST_ADMIN
+        import base64
+        
+        credentials = TEST_ADMIN if use_admin else TEST_USER
+        auth_string = f"{credentials['username']}:{credentials['password']}"
+        auth_bytes = auth_string.encode('ascii')
+        base64_bytes = base64.b64encode(auth_bytes)
+        base64_string = base64_bytes.decode('ascii')
+        headers["Authorization"] = f"Basic {base64_string}"
 
     return headers
 
 
 def make_request(
-    method, endpoint, data=None, params=None, headers=None, service_name=None
+    method, endpoint, data=None, params=None, headers=None, service_name=None, use_admin=False
 ):
     """
     Realiza una solicitud HTTP al servicio especificado.
@@ -119,12 +125,19 @@ def make_request(
         params (dict, optional): Parámetros de consulta.
         headers (dict, optional): Headers adicionales.
         service_name (str, optional): Nombre del servicio. Si es None, usa el servicio actual.
+        use_admin (bool, optional): Si es True, usa credenciales de admin para la solicitud.
 
     Returns:
         Response: Objeto de respuesta.
     """
     if service_name is None:
         service_name = _current_service
+
+    # Auto-detect: use admin credentials for PUT/PATCH/DELETE on secured services
+    from config.config import SERVICES_CONFIG
+    service_config = SERVICES_CONFIG.get(service_name, {})
+    if not use_admin and method.upper() in ['PUT', 'PATCH', 'DELETE'] and service_config.get('requires_auth', False):
+        use_admin = True
 
     # Debug: mostrar qué servicio se está usando
     print(f"🔧 Usando servicio: {service_name}")
@@ -150,7 +163,7 @@ def make_request(
     print(f"🌐 {method} {url} (servicio: {service_name})")
 
     # Headers según el servicio
-    request_headers = get_headers(service_name)
+    request_headers = get_headers(service_name, use_admin=use_admin)
     if headers:
         request_headers.update(headers)
 

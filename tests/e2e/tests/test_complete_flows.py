@@ -9,7 +9,7 @@ from conftest import (
     set_current_service,
     make_request,
     generate_unique_id,
-    get_auth_token,
+    get_headers,
     is_success_status,
 )
 
@@ -35,12 +35,10 @@ class TestCompletePurchaseFlow:
         print("=" * 80)
 
         # ================================================================
-        # PASO 1: AUTENTICACIÓN
+        # PASO 1: AUTENTICACIÓN (usando HTTP Basic Auth automático)
         # ================================================================
-        print("\n[PASO 1] 🔐 Autenticando usuario...")
-        token = get_auth_token()
-        assert token is not None, "No se pudo obtener token de autenticación"
-        print(f"  ✅ Token obtenido: {token[:30]}...")
+        print("\n[PASO 1] 🔐 Autenticación automática con HTTP Basic Auth...")
+        print(f"  ✅ Las credenciales se envían automáticamente en cada request")
 
         # ================================================================
         # PASO 2: NAVEGAR PRODUCTOS
