@@ -17,7 +17,7 @@ spring:
 resilience4j:
   circuitbreaker:
     instances:
-      proxyService:
+      productService:
         register-health-indicator: true
         event-consumer-buffer-size: 10
         automatic-transition-from-open-to-half-open-enabled: true
@@ -25,8 +25,93 @@ resilience4j:
         minimum-number-of-calls: 5
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-size: 10
-        wait-duration-in-open-state: 5s
+        wait-duration-in-open-state: 10s
         sliding-window-type: COUNT_BASED
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+      userService:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        automatic-transition-from-open-to-half-open-enabled: true
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        wait-duration-in-open-state: 10s
+        sliding-window-type: COUNT_BASED
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+      favouriteService:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        automatic-transition-from-open-to-half-open-enabled: true
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        wait-duration-in-open-state: 10s
+        sliding-window-type: COUNT_BASED
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+  retry:
+    instances:
+      productService:
+        max-attempts: 3
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - org.springframework.web.client.ResourceAccessException
+      userService:
+        max-attempts: 3
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - org.springframework.web.client.ResourceAccessException
+      favouriteService:
+        max-attempts: 3
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - org.springframework.web.client.ResourceAccessException
+  timelimiter:
+    instances:
+      productService:
+        timeout-duration: 3s
+        cancel-running-future: true
+      userService:
+        timeout-duration: 3s
+        cancel-running-future: true
+      favouriteService:
+        timeout-duration: 3s
+        cancel-running-future: true
+  bulkhead:
+    instances:
+      productService:
+        max-concurrent-calls: 10
+        max-wait-duration: 1s
+      userService:
+        max-concurrent-calls: 10
+        max-wait-duration: 1s
+      favouriteService:
+        max-concurrent-calls: 10
+        max-wait-duration: 1s
+
+# Feign timeout configuration
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 2000
+        read-timeout: 3000
 
 management:
   health:
