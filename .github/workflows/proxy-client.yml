@@ -1,0 +1,48 @@
+# CI/CD Pipeline for proxy-client
+name: proxy-client CI/CD
+
+on:
+  push:
+    branches: [develop, master]
+    paths: ['proxy-client/**', '.github/workflows/proxy-client.yml']
+  pull_request:
+    branches: [develop, master]
+    paths: ['proxy-client/**']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options: [development, staging, production]
+
+jobs:
+  deploy-to-development:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'proxy-client'
+      service_port: '8900'
+      context_path: '/app'
+      environment: 'development'
+    secrets: inherit
+
+  deploy-to-staging:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'proxy-client'
+      service_port: '8900'
+      context_path: '/app'
+      environment: 'staging'
+    secrets: inherit
+
+  deploy-to-production:
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'proxy-client'
+      service_port: '8900'
+      context_path: '/app'
+      environment: 'production'
+    secrets: inherit

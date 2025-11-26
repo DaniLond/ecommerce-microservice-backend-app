@@ -1,0 +1,87 @@
+# CI/CD Pipeline for User Service
+# Triggers: Push to develop/main, Pull Requests, Manual dispatch
+
+name: User Service CI/CD
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'user-service/**'
+      - '.github/workflows/user-service.yml'
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'user-service/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+jobs:
+  # Development Environment - Auto deploy on push to develop
+  deploy-to-development:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'user-service'
+      service_port: '8700'
+      context_path: '/user-service'
+      environment: 'development'
+      requires_approval: false
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+
+  # Staging Environment - Auto deploy on push to main (after development)
+  deploy-to-staging:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'user-service'
+      service_port: '8700'
+      context_path: '/user-service'
+      environment: 'staging'
+      requires_approval: false
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+
+  # Production Environment - Manual approval required
+  deploy-to-production:
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'user-service'
+      service_port: '8700'
+      context_path: '/user-service'
+      environment: 'production'
+      requires_approval: true
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}

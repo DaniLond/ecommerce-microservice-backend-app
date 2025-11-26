@@ -1,0 +1,48 @@
+# CI/CD Pipeline for api-gateway
+name: api-gateway CI/CD
+
+on:
+  push:
+    branches: [develop, master]
+    paths: ['api-gateway/**', '.github/workflows/api-gateway.yml']
+  pull_request:
+    branches: [develop, master]
+    paths: ['api-gateway/**']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options: [development, staging, production]
+
+jobs:
+  deploy-to-development:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'api-gateway'
+      service_port: '8080'
+      context_path: '/'
+      environment: 'development'
+    secrets: inherit
+
+  deploy-to-staging:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'api-gateway'
+      service_port: '8080'
+      context_path: '/'
+      environment: 'staging'
+    secrets: inherit
+
+  deploy-to-production:
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'api-gateway'
+      service_port: '8080'
+      context_path: '/'
+      environment: 'production'
+    secrets: inherit

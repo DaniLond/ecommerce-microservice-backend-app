@@ -1,0 +1,48 @@
+# CI/CD Pipeline for shipping-service
+name: shipping-service CI/CD
+
+on:
+  push:
+    branches: [develop, master]
+    paths: ['shipping-service/**', '.github/workflows/shipping-service.yml']
+  pull_request:
+    branches: [develop, master]
+    paths: ['shipping-service/**']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options: [development, staging, production]
+
+jobs:
+  deploy-to-development:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'shipping-service'
+      service_port: '8600'
+      context_path: '/shipping-service'
+      environment: 'development'
+    secrets: inherit
+
+  deploy-to-staging:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'shipping-service'
+      service_port: '8600'
+      context_path: '/shipping-service'
+      environment: 'staging'
+    secrets: inherit
+
+  deploy-to-production:
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'shipping-service'
+      service_port: '8600'
+      context_path: '/shipping-service'
+      environment: 'production'
+    secrets: inherit

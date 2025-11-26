@@ -1,0 +1,48 @@
+# CI/CD Pipeline for order-service
+name: order-service CI/CD
+
+on:
+  push:
+    branches: [develop, master]
+    paths: ['order-service/**', '.github/workflows/order-service.yml']
+  pull_request:
+    branches: [develop, master]
+    paths: ['order-service/**']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options: [development, staging, production]
+
+jobs:
+  deploy-to-development:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'order-service'
+      service_port: '8300'
+      context_path: '/order-service'
+      environment: 'development'
+    secrets: inherit
+
+  deploy-to-staging:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'order-service'
+      service_port: '8300'
+      context_path: '/order-service'
+      environment: 'staging'
+    secrets: inherit
+
+  deploy-to-production:
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'order-service'
+      service_port: '8300'
+      context_path: '/order-service'
+      environment: 'production'
+    secrets: inherit

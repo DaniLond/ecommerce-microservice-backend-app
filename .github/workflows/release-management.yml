@@ -1,0 +1,283 @@
+# Automatic Release Notes Generation
+# Este workflow genera automáticamente:
+# - Release Notes con changelog completo
+# - Tags semánticos
+# - GitHub Releases
+# - Documentación de cambios
+
+name: Release Management
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Type of release'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-release-notes:
+    name: 📝 Generate Release Notes
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 🔍 Get Latest Tag
+        id: previoustag
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "📌 Latest tag: $LATEST_TAG"
+          
+      - name: 🔢 Calculate New Version
+        id: newversion
+        run: |
+          PREV_TAG="${{ steps.previoustag.outputs.tag }}"
+          PREV_VERSION=${PREV_TAG#v}
+          
+          IFS='.' read -ra VERSION_PARTS <<< "$PREV_VERSION"
+          MAJOR=${VERSION_PARTS[0]:-0}
+          MINOR=${VERSION_PARTS[1]:-0}
+          PATCH=${VERSION_PARTS[2]:-0}
+          
+          # Analizar commits desde el último tag
+          COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"%s" 2>/dev/null || git log --pretty=format:"%s")
+          
+          MAJOR_BUMP=false
+          MINOR_BUMP=false
+          
+          while IFS= read -r commit; do
+            if [[ $commit =~ ^(BREAKING CHANGE:|feat!:|fix!:) ]]; then
+              MAJOR_BUMP=true
+            elif [[ $commit =~ ^feat ]]; then
+              MINOR_BUMP=true
+            fi
+          done <<< "$COMMITS"
+          
+          # Override con input manual si existe
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            case "${{ inputs.release_type }}" in
+              major) MAJOR_BUMP=true; MINOR_BUMP=false ;;
+              minor) MAJOR_BUMP=false; MINOR_BUMP=true ;;
+              patch) MAJOR_BUMP=false; MINOR_BUMP=false ;;
+            esac
+          fi
+          
+          # Calcular nueva versión
+          if [ "$MAJOR_BUMP" = true ]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [ "$MINOR_BUMP" = true ]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          else
+            PATCH=$((PATCH + 1))
+          fi
+          
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "📌 New version: v$NEW_VERSION"
+          
+      - name: 📝 Generate CHANGELOG
+        id: changelog
+        run: |
+          PREV_TAG="${{ steps.previoustag.outputs.tag }}"
+          NEW_VERSION="v${{ steps.newversion.outputs.version }}"
+          
+          echo "# Changelog" > CHANGELOG_NEW.md
+          echo "" >> CHANGELOG_NEW.md
+          echo "## $NEW_VERSION ($(date +'%Y-%m-%d'))" >> CHANGELOG_NEW.md
+          echo "" >> CHANGELOG_NEW.md
+          
+          # Obtener commits desde el último tag
+          COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"%h|%s|%an|%ad" --date=short 2>/dev/null || git log --pretty=format:"%h|%s|%an|%ad" --date=short | head -20)
+          
+          # Categorizar commits según Conventional Commits
+          declare -A categories
+          categories[feat]="### ✨ New Features"
+          categories[fix]="### 🐛 Bug Fixes"
+          categories[docs]="### 📚 Documentation"
+          categories[style]="### 💄 Styles"
+          categories[refactor]="### ♻️ Code Refactoring"
+          categories[perf]="### ⚡ Performance Improvements"
+          categories[test]="### ✅ Tests"
+          categories[build]="### 🔧 Build System"
+          categories[ci]="### 👷 CI/CD"
+          categories[chore]="### 🔨 Chores"
+          categories[other]="### 📦 Other Changes"
+          
+          declare -A commit_lists
+          
+          while IFS='|' read -r hash subject author date; do
+            category="other"
+            
+            for key in "${!categories[@]}"; do
+              if [[ $subject =~ ^$key ]]; then
+                category=$key
+                break
+              fi
+            done
+            
+            # Limpiar el tipo del commit del subject
+            clean_subject=$(echo "$subject" | sed -E 's/^[a-z]+(\([^)]+\))?!?:\s*//')
+            
+            # Extraer alcance si existe
+            scope=""
+            if [[ $subject =~ \(([^)]+)\) ]]; then
+              scope=" **[${BASH_REMATCH[1]}]**"
+            fi
+            
+            commit_lists[$category]+="- $clean_subject$scope ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) by @$author\n"
+          done <<< "$COMMITS"
+          
+          # Escribir changelog por categorías
+          for key in feat fix docs style refactor perf test build ci chore other; do
+            if [ ! -z "${commit_lists[$key]}" ]; then
+              echo "" >> CHANGELOG_NEW.md
+              echo "${categories[$key]}" >> CHANGELOG_NEW.md
+              echo "" >> CHANGELOG_NEW.md
+              echo -e "${commit_lists[$key]}" >> CHANGELOG_NEW.md
+            fi
+          done
+          
+          # Agregar sección de Breaking Changes si existen
+          BREAKING=$(echo "$COMMITS" | grep -i "BREAKING CHANGE" || true)
+          if [ ! -z "$BREAKING" ]; then
+            echo "" >> CHANGELOG_NEW.md
+            echo "### ⚠️ BREAKING CHANGES" >> CHANGELOG_NEW.md
+            echo "" >> CHANGELOG_NEW.md
+            while IFS='|' read -r hash subject author date; do
+              echo "- $subject ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> CHANGELOG_NEW.md
+            done <<< "$BREAKING"
+          fi
+          
+          # Agregar información de release
+          echo "" >> CHANGELOG_NEW.md
+          echo "---" >> CHANGELOG_NEW.md
+          echo "" >> CHANGELOG_NEW.md
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREV_TAG...$NEW_VERSION" >> CHANGELOG_NEW.md
+          echo "" >> CHANGELOG_NEW.md
+          
+          # Merge con CHANGELOG existente si existe
+          if [ -f CHANGELOG.md ]; then
+            tail -n +2 CHANGELOG.md >> CHANGELOG_NEW.md
+          fi
+          
+          mv CHANGELOG_NEW.md CHANGELOG.md
+          
+          cat CHANGELOG.md
+          
+      - name: 🏷️ Create Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          NEW_VERSION="v${{ steps.newversion.outputs.version }}"
+          
+          git add CHANGELOG.md
+          git commit -m "chore(release): $NEW_VERSION [skip ci]"
+          git tag -a $NEW_VERSION -m "Release $NEW_VERSION"
+          git push origin main
+          git push origin $NEW_VERSION
+          
+      - name: 📦 Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.newversion.outputs.version }}
+          name: Release v${{ steps.newversion.outputs.version }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 📊 Generate Release Metrics
+        run: |
+          NEW_VERSION="v${{ steps.newversion.outputs.version }}"
+          PREV_TAG="${{ steps.previoustag.outputs.tag }}"
+          
+          echo "## 📊 Release Metrics" > metrics.md
+          echo "" >> metrics.md
+          
+          # Contar commits
+          COMMIT_COUNT=$(git rev-list $PREV_TAG..HEAD --count 2>/dev/null || echo "0")
+          echo "- **Total Commits**: $COMMIT_COUNT" >> metrics.md
+          
+          # Contar autores únicos
+          AUTHOR_COUNT=$(git log $PREV_TAG..HEAD --format='%an' 2>/dev/null | sort -u | wc -l)
+          echo "- **Contributors**: $AUTHOR_COUNT" >> metrics.md
+          
+          # Contar archivos cambiados
+          FILES_CHANGED=$(git diff --name-only $PREV_TAG..HEAD 2>/dev/null | wc -l)
+          echo "- **Files Changed**: $FILES_CHANGED" >> metrics.md
+          
+          # Días desde último release
+          LAST_RELEASE_DATE=$(git log -1 --format=%ai $PREV_TAG 2>/dev/null | cut -d' ' -f1)
+          if [ ! -z "$LAST_RELEASE_DATE" ]; then
+            DAYS_SINCE=$((( $(date +%s) - $(date -d "$LAST_RELEASE_DATE" +%s) ) / 86400))
+            echo "- **Days Since Last Release**: $DAYS_SINCE" >> metrics.md
+          fi
+          
+          cat metrics.md
+          
+      - name: 📢 Notify Slack
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        run: |
+          curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "🎉 New Release: v${{ steps.newversion.outputs.version }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🎉 New Release Published"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Version:*\nv${{ steps.newversion.outputs.version }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:*\n${{ github.ref_name }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Release Notes"
+                      },
+                      "url": "https://github.com/${{ github.repository }}/releases/tag/v${{ steps.newversion.outputs.version }}"
+                    }
+                  ]
+                }
+              ]
+            }'

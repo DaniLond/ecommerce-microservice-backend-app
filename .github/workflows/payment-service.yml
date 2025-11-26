@@ -1,0 +1,48 @@
+# CI/CD Pipeline for payment-service
+name: payment-service CI/CD
+
+on:
+  push:
+    branches: [develop, master]
+    paths: ['payment-service/**', '.github/workflows/payment-service.yml']
+  pull_request:
+    branches: [develop, master]
+    paths: ['payment-service/**']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options: [development, staging, production]
+
+jobs:
+  deploy-to-development:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'payment-service'
+      service_port: '8400'
+      context_path: '/payment-service'
+      environment: 'development'
+    secrets: inherit
+
+  deploy-to-staging:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'payment-service'
+      service_port: '8400'
+      context_path: '/payment-service'
+      environment: 'staging'
+    secrets: inherit
+
+  deploy-to-production:
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
+    uses: ./.github/workflows/reusable-microservice-ci-cd.yml
+    with:
+      service_name: 'payment-service'
+      service_port: '8400'
+      context_path: '/payment-service'
+      environment: 'production'
+    secrets: inherit
