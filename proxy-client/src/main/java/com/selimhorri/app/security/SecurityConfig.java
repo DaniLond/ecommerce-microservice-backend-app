@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.headers()
 				.frameOptions().deny()
 				.xssProtection().and()
-				.contentSecurityPolicy("default-src 'self'").and().sessionManagement()
+				.contentSecurityPolicy("default-src 'self'").and().and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 			.addFilterBefore(this.jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
