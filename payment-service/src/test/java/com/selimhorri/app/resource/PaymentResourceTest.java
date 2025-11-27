@@ -15,12 +15,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
+
+import com.selimhorri.app.config.SecurityConfig;
+import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.selimhorri.app.dto.PaymentDto;
 import com.selimhorri.app.service.PaymentService;
 
 @WebMvcTest(PaymentResource.class)
+@Import(SecurityConfig.class)
 @DisplayName("PaymentResource Tests")
 class PaymentResourceTest {
 	
@@ -42,6 +47,7 @@ class PaymentResourceTest {
 	}
 	
 	@Test
+	@WithMockUser(roles = "ADMIN")
 	@DisplayName("GET /api/payments - Should return all payments")
 	void testFindAll() throws Exception {
 		when(paymentService.findAll()).thenReturn(Arrays.asList(paymentDto));
@@ -51,6 +57,7 @@ class PaymentResourceTest {
 	}
 	
 	@Test
+	@WithMockUser(roles = "ADMIN")
 	@DisplayName("GET /api/payments/{id} - Should return payment")
 	void testFindById() throws Exception {
 		when(paymentService.findById(1)).thenReturn(paymentDto);
@@ -60,6 +67,7 @@ class PaymentResourceTest {
 	}
 	
 	@Test
+	@WithMockUser(roles = "ADMIN")
 	@DisplayName("POST /api/payments - Should create payment")
 	void testSave() throws Exception {
 		when(paymentService.save(any(PaymentDto.class))).thenReturn(paymentDto);
@@ -71,6 +79,7 @@ class PaymentResourceTest {
 	}
 	
 	@Test
+	@WithMockUser(roles = "ADMIN")
 	@DisplayName("PUT /api/payments - Should update payment")
 	void testUpdate() throws Exception {
 		when(paymentService.update(any(PaymentDto.class))).thenReturn(paymentDto);
@@ -82,6 +91,7 @@ class PaymentResourceTest {
 	}
 	
 	@Test
+	@WithMockUser(roles = "ADMIN")
 	@DisplayName("DELETE /api/payments/{id} - Should delete payment")
 	void testDeleteById() throws Exception {
 		doNothing().when(paymentService).deleteById(1);

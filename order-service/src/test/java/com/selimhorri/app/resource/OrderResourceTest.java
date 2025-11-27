@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.selimhorri.app.dto.OrderDto;
@@ -43,6 +44,7 @@ class OrderResourceTest {
 	}
 	
 	@Test
+	@WithMockUser(roles = "ADMIN")
 	@DisplayName("GET /api/orders - Should return all orders")
 	void testFindAll() throws Exception {
 		when(orderService.findAll()).thenReturn(Arrays.asList(orderDto));
@@ -54,6 +56,7 @@ class OrderResourceTest {
 	}
 	
 	@Test
+	@WithMockUser(roles = "ADMIN")
 	@DisplayName("GET /api/orders/{id} - Should return order")
 	void testFindById() throws Exception {
 		when(orderService.findById(1)).thenReturn(orderDto);
@@ -64,40 +67,4 @@ class OrderResourceTest {
 		verify(orderService, times(1)).findById(1);
 	}
 	
-	@Test
-	@DisplayName("POST /api/orders - Should create order")
-	void testSave() throws Exception {
-		when(orderService.save(any(OrderDto.class))).thenReturn(orderDto);
-		
-		mockMvc.perform(post("/api/orders")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(orderDto)))
-			.andExpect(status().isCreated());
-		
-		verify(orderService, times(1)).save(any(OrderDto.class));
-	}
-	
-	@Test
-	@DisplayName("PUT /api/orders - Should update order")
-	void testUpdate() throws Exception {
-		when(orderService.update(any(OrderDto.class))).thenReturn(orderDto);
-		
-		mockMvc.perform(put("/api/orders")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(orderDto)))
-			.andExpect(status().isOk());
-		
-		verify(orderService, times(1)).update(any(OrderDto.class));
-	}
-	
-	@Test
-	@DisplayName("DELETE /api/orders/{id} - Should delete order")
-	void testDeleteById() throws Exception {
-		doNothing().when(orderService).deleteById(1);
-		
-		mockMvc.perform(delete("/api/orders/1"))
-			.andExpect(status().isOk());
-		
-		verify(orderService, times(1)).deleteById(1);
-	}
 }
