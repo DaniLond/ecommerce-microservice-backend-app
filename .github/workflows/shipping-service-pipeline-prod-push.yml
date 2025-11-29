@@ -1,9 +1,11 @@
 
+
 name: Prod, on PUSH Java CI/CD of shipping-service-ecommerce-boot, ecommerce-microservice-backend app
 on:
   push:
     branches: [ master ]
-    
+
+
   build_push:
     runs-on: ubuntu-latest
     steps:
@@ -81,7 +83,6 @@ on:
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
               -Dsonar.organization=danilond \
-
   semantic_release:
     name: Semantic Release & Changelog
     runs-on: ubuntu-latest
