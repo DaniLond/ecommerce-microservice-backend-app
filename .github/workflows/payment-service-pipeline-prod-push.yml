@@ -81,6 +81,7 @@ jobs:
             -Dsonar.projectKey=payment-service-prod \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.organization=leidy-daniela-londoño-candelo \
             -Dsonar.qualitygate.wait=true
       - name: SonarQube Quality Gate Check
         uses: sonarsource/sonarqube-quality-gate-action@master
