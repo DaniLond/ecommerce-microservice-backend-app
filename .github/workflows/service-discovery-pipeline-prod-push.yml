@@ -26,7 +26,8 @@ jobs:
       - name: Build Docker image for service-discovery-ecommerce-boot Microservice
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build -f service-discovery/Dockerfile -t ghcr.io/$REPO/service-discovery-ecommerce-boot:prod-latest .
+          docker build -f Dockerfile -t ghcr.io/$REPO/service-discovery-ecommerce-boot:prod-latest .
+        working-directory: service-discovery
       - name: Push service-discovery-ecommerce-boot image
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
