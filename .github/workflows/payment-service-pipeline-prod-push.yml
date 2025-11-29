@@ -61,11 +61,11 @@ jobs:
     needs: build_push
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          java-version: '11'
-          distribution: 'adopt'
+          java-version: '17'
+          distribution: 'temurin'
       - name: Cache SonarQube packages
         uses: actions/cache@v3
         with:
