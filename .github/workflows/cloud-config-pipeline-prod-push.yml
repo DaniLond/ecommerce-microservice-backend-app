@@ -74,11 +74,11 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=cloud-config-prod \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.organization=danilond \
-            -Dsonar.qualitygate.wait=true
+              -Dsonar.projectKey=DaniLond_ecommerce-microservice-backend-app \
+              -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.organization=danilond \
+              -Dsonar.qualitygate.wait=true
 
   semantic_release:
     name: Semantic Release & Changelog
