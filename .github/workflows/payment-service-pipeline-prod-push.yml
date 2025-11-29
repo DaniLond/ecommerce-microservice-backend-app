@@ -78,10 +78,10 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=ecommerce-microservice-backend-app \
+              -Dsonar.projectKey=DaniLond_ecommerce-microservice-backend-app \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.organization=leidy-daniela-londoño-candelo \
+              -Dsonar.organization=danilond \
             -Dsonar.qualitygate.wait=true
       - name: SonarQube Quality Gate Check
         uses: sonarsource/sonarqube-quality-gate-action@master
