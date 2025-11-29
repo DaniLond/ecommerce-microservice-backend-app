@@ -43,13 +43,9 @@ jobs:
     needs: build_push
     steps:
       - name: Trivy Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ secrets.DOCKER_USERNAME }}/payment-service-ecommerce-boot:${{ secrets.PROJECT_VERSION }}
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
+        run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          trivy image ghcr.io/$REPO/payment-service-ecommerce-boot:prod-latest --format table --exit-code 1 --ignore-unfixed --vuln-type os,library
 
   sonarcloud:
     name: SonarQube Analysis
