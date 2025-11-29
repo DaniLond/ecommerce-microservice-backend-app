@@ -77,6 +77,7 @@ jobs:
             -Dsonar.projectKey=cloud-config-prod \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.organization=danilond \
             -Dsonar.qualitygate.wait=true
 
   semantic_release:
