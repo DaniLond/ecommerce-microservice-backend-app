@@ -96,12 +96,14 @@ on:
   env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   run: npx semantic-release --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
+  build_push:
 name: Prod, on PUSH Java CI/CD of shipping-service-ecommerce-boot, ecommerce-microservice-backend app
 
 on:
   push:
     branches: [ master ]
-jobs:
+
+
   build_push:
     runs-on: ubuntu-latest
     steps:
@@ -196,8 +198,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
-name: Prod, on PUSH Java CI/CD of shipping-service-ecommerce-boot, ecommerce-microservice-backend app
-
 on:
   push:
     branches: [ master ]
