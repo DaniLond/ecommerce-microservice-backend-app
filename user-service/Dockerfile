@@ -3,6 +3,6 @@ ARG PROJECT_VERSION=0.1.0
 RUN mkdir -p /home/app
 WORKDIR /home/app
 ENV SPRING_PROFILES_ACTIVE=dev
-ADD target/user-service-v${PROJECT_VERSION}.jar user-service.jar
+ADD user-service/target/user-service-v${PROJECT_VERSION}.jar user-service.jar
 EXPOSE 8700
 ENTRYPOINT ["java", "-jar", "user-service.jar"]
