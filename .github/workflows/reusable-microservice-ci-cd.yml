@@ -184,7 +184,7 @@ jobs:
     name: 🔍 SonarQube Analysis
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: ${{ secrets.SONAR_TOKEN != '' }}
+    if: ${{ inputs.SONAR_TOKEN != '' }}
     
     steps:
       - name: 📥 Checkout code
@@ -202,7 +202,7 @@ jobs:
       - name: 📊 SonarQube Scan
         working-directory: ./${{ inputs.service_name }}
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ inputs.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
         run: |
           mvn sonar:sonar \
@@ -217,7 +217,7 @@ jobs:
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ inputs.SONAR_TOKEN }}
         continue-on-error: true
 
   # ============================================
@@ -506,7 +506,7 @@ jobs:
           fi
           
       - name: 📢 Slack Notification
-        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        if: ${{ inputs.SLACK_WEBHOOK_URL != '' }}
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
@@ -525,4 +525,4 @@ jobs:
               }]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ inputs.SLACK_WEBHOOK_URL }}
