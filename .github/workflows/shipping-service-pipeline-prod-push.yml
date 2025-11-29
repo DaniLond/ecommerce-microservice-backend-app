@@ -1,5 +1,4 @@
 
-
 name: Prod, on PUSH Java CI/CD of shipping-service-ecommerce-boot, ecommerce-microservice-backend app
 on:
   push:
@@ -91,4 +90,5 @@ on:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
+
 
