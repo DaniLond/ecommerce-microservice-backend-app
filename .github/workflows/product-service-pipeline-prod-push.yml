@@ -32,7 +32,9 @@ jobs:
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           docker build -f product-service/Dockerfile -t ghcr.io/$REPO/product-service-ecommerce-boot:prod-latest .
+      - name: Push product-service-ecommerce-boot image
         run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           docker push ghcr.io/$REPO/product-service-ecommerce-boot:prod-latest
   trivy_scan:
     runs-on: ubuntu-latest
