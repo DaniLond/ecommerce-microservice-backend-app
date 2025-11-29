@@ -91,5 +91,4 @@ on:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
-          node-version: '20'
 
