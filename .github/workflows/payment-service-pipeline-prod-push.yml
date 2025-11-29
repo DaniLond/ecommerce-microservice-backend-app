@@ -116,7 +116,7 @@ jobs:
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME_PROD }}
       - name: Deploy manifests
         run: |
-          kubectl apply -f k8s/prod/payment-service/
+          kubectl apply -f k8s/services/06-payment-service.yaml
 
   notify_email:
     name: Notificar por Email si falla
