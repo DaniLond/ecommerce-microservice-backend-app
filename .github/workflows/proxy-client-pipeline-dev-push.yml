@@ -1,4 +1,3 @@
-
 name: Develop, on PUSH Java CI/CD of proxy-client-ecommerce-boot, ecommerce-microservice-backend app
 
 on:
@@ -29,5 +28,44 @@ jobs:
       run: docker build -f proxy-client/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/proxy-client-ecommerce-boot:${{ secrets.PROJECT_VERSION }}dev .
     - name: Push proxy-client-ecommerce-boot image
       run: docker push ${{ secrets.DOCKER_USERNAME }}/proxy-client-ecommerce-boot:${{ secrets.PROJECT_VERSION }}dev
+
+  trivy_scan:
+    name: Trivy Scan Docker Image
+    runs-on: ubuntu-latest
+    needs: build_push
+    steps:
+      - name: Install Trivy
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget
+          wget -qO- https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.49.1_Linux-64bit.deb > trivy.deb
+          sudo dpkg -i trivy.deb
+      - name: Scan Docker image
+        run: |
+          trivy image --exit-code 1 --severity HIGH,CRITICAL ${{ secrets.DOCKER_USERNAME }}/proxy-client-ecommerce-boot:${{ secrets.PROJECT_VERSION }}dev
+
+  deploy_to_aks:
+    name: Deploy to AKS (dev)
+    runs-on: ubuntu-latest
+    needs: [build_push, trivy_scan]
+    environment:
+      name: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+      - name: Set AKS context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ secrets.AKS_RESOURCE_GROUP_DEV }}
+          cluster-name: ${{ secrets.AKS_CLUSTER_NAME_DEV }}
+      - name: Deploy manifests
+        run: |
+          kubectl apply -f ../../Infra/ecommerce-microservice-Infraestructura/k8s/services/09-proxy-client.yaml
+      - name: Verify rollout
+        run: |
+          kubectl rollout status deployment/proxy-client -n development
 
 

@@ -1,0 +1,70 @@
+```yaml
+sonarcloud:
+  name: SonarQube Analysis
+  runs-on: ubuntu-latest
+  needs: build_push
+  steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    - name: Cache SonarQube packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+    - name: SonarQube Scan
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      run: |
+        mvn clean verify sonar:sonar \
+          -Dsonar.projectKey=inventory-service-dev \
+          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+          -Dsonar.qualitygate.wait=true
+    - name: SonarQube Quality Gate Check
+      uses: sonarsource/sonarqube-quality-gate-action@master
+      timeout-minutes: 5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+semantic_release:
+  name: Semantic Release & Changelog
+  runs-on: ubuntu-latest
+  needs: build_push
+  steps:
+    - uses: actions/checkout@v2
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install semantic-release
+      run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+    - name: Run semantic-release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        semantic-release
+
+notify_email:
+  name: Notificar por Email si falla
+  runs-on: ubuntu-latest
+  needs: [build_push, trivy_scan, deploy_to_aks]
+  if: failure()
+  steps:
+    - name: Send email notification
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: ${{ secrets.SMTP_SERVER }}
+        server_port: ${{ secrets.SMTP_PORT }}
+        username: ${{ secrets.SMTP_USERNAME }}
+        password: ${{ secrets.SMTP_PASSWORD }}
+        subject: 'Pipeline Fallida: inventory-service'
+        to: ${{ secrets.NOTIFY_EMAIL_TO }}
+        from: ${{ secrets.NOTIFY_EMAIL_FROM }}
+        body: 'La pipeline de inventory-service ha fallado. Revisa los logs en GitHub Actions.'
+```

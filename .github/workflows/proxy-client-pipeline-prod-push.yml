@@ -1,5 +1,4 @@
-
-name: Develop, on PUSH Java CI/CD of proxy-client-ecommerce-boot, ecommerce-microservice-backend app
+name: Prod, on PUSH Java CI/CD of proxy-client-ecommerce-boot, ecommerce-microservice-backend app
 
 on:
   push:
@@ -7,27 +6,127 @@ on:
 
 jobs:
   build_push:
-    #needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'adopt'
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - name: Setup env variables for Docker
-      run: echo Setup env variables for Docker
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Docker Login
-      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-    - name: Build Docker image for proxy-client-ecommerce-boot Microservice
-      run: docker build -f proxy-client/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/proxy-client-ecommerce-boot:${{ secrets.PROJECT_VERSION }} .
-    - name: Push proxy-client-ecommerce-boot image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/proxy-client-ecommerce-boot:${{ secrets.PROJECT_VERSION }}
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Setup env variables for Docker
+        run: echo Setup env variables for Docker
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Docker Login
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Build Docker image for proxy-client-ecommerce-boot Microservice
+        run: docker build -f proxy-client/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/proxy-client-ecommerce-boot:${{ secrets.PROJECT_VERSION }} .
+      - name: Push proxy-client-ecommerce-boot image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/proxy-client-ecommerce-boot:${{ secrets.PROJECT_VERSION }}
+
+  trivy_scan:
+    name: Trivy Scan
+    runs-on: ubuntu-latest
+    needs: build_push
+    steps:
+      - name: Trivy Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.DOCKER_USERNAME }}/proxy-client-ecommerce-boot:${{ secrets.PROJECT_VERSION }}
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+
+  sonarcloud:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    needs: build_push
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - name: Cache SonarQube packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: SonarQube Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=proxy-client-prod \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.qualitygate.wait=true
+      - name: SonarQube Quality Gate Check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  semantic_release:
+    name: Semantic Release & Changelog
+    runs-on: ubuntu-latest
+    needs: build_push
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install semantic-release
+        run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          semantic-release
+
+  deploy_to_aks:
+    name: Deploy to AKS
+    runs-on: ubuntu-latest
+    needs: [build_push, trivy_scan]
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+      - name: Set AKS context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ecommerce-prod-rg2
+          cluster-name: ${{ secrets.AKS_CLUSTER_NAME_PROD }}
+      - name: Deploy manifests
+        run: |
+          kubectl apply -f k8s/prod/proxy-client/
+
+  notify_email:
+    name: Notificar por Email si falla
+    runs-on: ubuntu-latest
+    needs: [build_push, trivy_scan, deploy_to_aks]
+    if: failure()
+    steps:
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: 'Pipeline Fallida: proxy-client (PROD)'
+          to: ${{ secrets.NOTIFY_EMAIL_TO }}
+          from: ${{ secrets.NOTIFY_EMAIL_FROM }}
+          body: 'La pipeline de proxy-client (PROD) ha fallado. Revisa los logs en GitHub Actions.'
 
 
