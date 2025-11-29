@@ -1,10 +1,10 @@
 name: Prod, on PUSH Java CI/CD of product-service-ecommerce-boot, ecommerce-microservice-backend app
 
-    needs: build_push
+on:
   push:
     branches: [ master ]
 
-    steps:
+      - uses: actions/checkout@v2
   build_push:
     runs-on: ubuntu-latest
     steps:
@@ -99,7 +99,6 @@ name: Prod, on PUSH Java CI/CD of product-service-ecommerce-boot, ecommerce-micr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
-      - uses: actions/checkout@v2
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
