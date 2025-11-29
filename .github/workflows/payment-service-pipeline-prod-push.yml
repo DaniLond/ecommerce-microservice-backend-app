@@ -28,7 +28,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker image for payment-service-ecommerce-boot Microservice
-        run: docker build -f payment-service/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/payment-service-ecommerce-boot:${{ secrets.PROJECT_VERSION }} .
+        run: docker build -f payment-service/Dockerfile -t ghcr.io/${{ github.repository }}/payment-service-ecommerce-boot:prod-latest .
       - name: Push payment-service-ecommerce-boot image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/payment-service-ecommerce-boot:${{ secrets.PROJECT_VERSION }}
 
