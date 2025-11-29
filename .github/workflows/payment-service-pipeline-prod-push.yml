@@ -33,7 +33,9 @@ jobs:
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           docker build -f payment-service/Dockerfile -t ghcr.io/$REPO/payment-service-ecommerce-boot:prod-latest .
       - name: Push payment-service-ecommerce-boot image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/payment-service-ecommerce-boot:${{ secrets.PROJECT_VERSION }}
+        run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker push ghcr.io/$REPO/payment-service-ecommerce-boot:prod-latest
 
   trivy_scan:
     name: Trivy Scan
