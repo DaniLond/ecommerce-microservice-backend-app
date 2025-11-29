@@ -1,10 +1,8 @@
 name: Prod, on PUSH Java CI/CD of user-service-ecommerce-boot, ecommerce-microservice-backend app
 
-        uses: azure/login@v1
+on:
   push:
     branches: [ master ]
-
-        with:
   build_push:
     runs-on: ubuntu-latest
     steps:
