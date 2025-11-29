@@ -1,12 +1,13 @@
 name: Prod, on PUSH Java CI/CD of product-service-ecommerce-boot, ecommerce-microservice-backend app
 
+jobs:
 name: Prod, on PUSH Java CI/CD of product-service-ecommerce-boot, ecommerce-microservice-backend app
 
-on:
+  push:
   push:
     branches: [ master ]
 
-jobs:
+    branches: [ master ]
   build_push:
     runs-on: ubuntu-latest
     steps:
@@ -101,8 +102,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
-  push:
-    branches: [ master ]
   build_push:
     runs-on: ubuntu-latest
     steps:
