@@ -1,10 +1,9 @@
+
 name: Prod, on PUSH Java CI/CD of shipping-service-ecommerce-boot, ecommerce-microservice-backend app
-
-
+on:
   push:
     branches: [ master ]
-
-
+    
   build_push:
     runs-on: ubuntu-latest
     steps:
