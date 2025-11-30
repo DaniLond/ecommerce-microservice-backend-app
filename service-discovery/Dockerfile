@@ -8,7 +8,7 @@ WORKDIR /home/app
 USER appuser
 ENV SPRING_PROFILES_ACTIVE=dev \
 	JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
-COPY --chown=appuser:appgroup target/service-discovery-v${PROJECT_VERSION}.jar service-discovery.jar
+COPY --chown=appuser:appgroup target/*.jar service-discovery.jar
 EXPOSE 8761
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar service-discovery.jar"]
 
