@@ -76,17 +76,15 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // Create in-memory users for testing
-        // In production, replace with database-backed UserDetailsService
         UserDetails user = User.builder()
 			.username("user")
-			.password(passwordEncoder().encode("A7d!kL9#xQ2")) // strong password
+			.password(passwordEncoder().encode("A7d!kL9#xQ2"))
 			.roles("USER")
 			.build();
 
 		UserDetails admin = User.builder()
 			.username("admin")
-			.password(passwordEncoder().encode("S9v@pR3!zW8")) // strong password
+			.password(passwordEncoder().encode("S9v@pR3!zW8"))
 			.roles("USER", "ADMIN")
 			.build();
 
