@@ -134,8 +134,8 @@ run_manual_tests() {
     echo -e "${BLUE}Auth URL: ${auth_url}${NC}"
     
     local test_creds=(
-        "admin:admin"
-        "admin:password"
+        "admin:S9v@pR3!zW8"
+        "user:A7d!kL9#xQ2"
         "admin:123456"
         "test:test"
     )

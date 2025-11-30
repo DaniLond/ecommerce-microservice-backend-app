@@ -133,7 +133,7 @@ class EcommerceUser(HttpUser):
         """Configurar autenticación HTTP Basic Auth"""
         # Usar credenciales configuradas en Spring Security
         username = "user"
-        password = "password"
+        password = "A7d!kL9#xQ2"
         
         # Crear header de autenticación HTTP Basic
         credentials = f"{username}:{password}"

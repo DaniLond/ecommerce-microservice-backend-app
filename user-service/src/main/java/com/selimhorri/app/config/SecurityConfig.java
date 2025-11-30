@@ -79,16 +79,16 @@ public class SecurityConfig {
         // Create in-memory users for testing
         // In production, replace with database-backed UserDetailsService
         UserDetails user = User.builder()
-            .username("user")
-            .password(passwordEncoder().encode("password"))
-            .roles("USER")
-            .build();
+			.username("user")
+			.password(passwordEncoder().encode("A7d!kL9#xQ2")) // strong password
+			.roles("USER")
+			.build();
 
-        UserDetails admin = User.builder()
-            .username("admin")
-            .password(passwordEncoder().encode("admin"))
-            .roles("USER", "ADMIN")
-            .build();
+		UserDetails admin = User.builder()
+			.username("admin")
+			.password(passwordEncoder().encode("S9v@pR3!zW8")) // strong password
+			.roles("USER", "ADMIN")
+			.build();
 
         return new InMemoryUserDetailsManager(user, admin);
     }
