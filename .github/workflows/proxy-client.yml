@@ -38,8 +38,7 @@ jobs:
       - name: Build Docker image for proxy-client-ecommerce-boot Microservice
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build -f Dockerfile -t ghcr.io/$REPO/proxy-client-ecommerce-boot:prod-latest .
-        working-directory: proxy-client
+          docker build -f proxy-client/Dockerfile -t ghcr.io/$REPO/proxy-client-ecommerce-boot:prod-latest proxy-client
       - name: Push proxy-client-ecommerce-boot image
         if: |
           github.ref == 'refs/heads/master' ||

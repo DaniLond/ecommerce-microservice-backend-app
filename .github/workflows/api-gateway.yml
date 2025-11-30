@@ -43,7 +43,7 @@ jobs:
       - name: Build Docker image for api-gateway-ecommerce-boot Microservice
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build -f api-gateway/Dockerfile -t ghcr.io/$REPO/api-gateway-ecommerce-boot:prod-latest .
+          docker build -f api-gateway/Dockerfile -t ghcr.io/$REPO/api-gateway-ecommerce-boot:prod-latest api-gateway
       - name: Push api-gateway-ecommerce-boot image
         if: |
           github.ref == 'refs/heads/master' ||

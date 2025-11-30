@@ -43,7 +43,7 @@ jobs:
       - name: Build Docker image for cloud-config-ecommerce-boot Microservice
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build -f cloud-config/Dockerfile -t ghcr.io/$REPO/cloud-config-ecommerce-boot:prod-latest .
+          docker build -f cloud-config/Dockerfile -t ghcr.io/$REPO/cloud-config-ecommerce-boot:prod-latest cloud-config
       - name: Push cloud-config-ecommerce-boot image
         if: |
           github.ref == 'refs/heads/master' ||

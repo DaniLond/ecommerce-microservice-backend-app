@@ -43,7 +43,7 @@ jobs:
       - name: Build Docker image for product-service-ecommerce-boot Microservice
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build -f product-service/Dockerfile -t ghcr.io/$REPO/product-service-ecommerce-boot:prod-latest .
+          docker build -f product-service/Dockerfile -t ghcr.io/$REPO/product-service-ecommerce-boot:prod-latest product-service
       - name: Push product-service-ecommerce-boot image
         if: |
           github.ref == 'refs/heads/master' ||

@@ -43,7 +43,7 @@ jobs:
       - name: Build Docker image for favourite-service-ecommerce-boot Microservice
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build -f favourite-service/Dockerfile -t ghcr.io/$REPO/favourite-service-ecommerce-boot:prod-latest .
+          docker build -f favourite-service/Dockerfile -t ghcr.io/$REPO/favourite-service-ecommerce-boot:prod-latest favourite-service
       - name: Push favourite-service-ecommerce-boot image
         if: |
           github.ref == 'refs/heads/master' ||
