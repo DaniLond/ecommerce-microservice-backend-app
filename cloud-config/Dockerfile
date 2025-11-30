@@ -8,7 +8,7 @@ WORKDIR /home/app
 USER appuser
 ENV SPRING_PROFILES_ACTIVE=dev \
 	JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
-COPY --chown=appuser:appgroup target/cloud-config-v${PROJECT_VERSION}.jar cloud-config.jar
+COPY --chown=appuser:appgroup target/*.jar cloud-config.jar
 EXPOSE 9296
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar cloud-config.jar"]
 

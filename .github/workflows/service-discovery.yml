@@ -35,10 +35,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-        - name: Build Docker image for service-discovery-ecommerce-boot Microservice
-          run: |
-            REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-            docker build -f Dockerfile -t ghcr.io/$REPO/service-discovery-ecommerce-boot:prod-latest service-discovery
+      - name: Build Docker image for service-discovery-ecommerce-boot Microservice
+        run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -f Dockerfile -t ghcr.io/$REPO/service-discovery-ecommerce-boot:prod-latest .
         working-directory: service-discovery
       - name: Push service-discovery-ecommerce-boot image
         if: |
