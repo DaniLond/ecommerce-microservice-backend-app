@@ -1,4 +1,4 @@
-#pipeline for cloud-config microservice
+#pipeline for cloud-config
 name: CI/CD Cloud Config
 
 on:
